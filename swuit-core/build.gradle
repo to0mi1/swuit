@@ -1,3 +1,29 @@
 plugins {
     id 'java-library'
+    id 'maven-publish'
+}
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+publishing {
+    repositories {
+        maven {
+            name = 'GitHubPackages'
+            url = uri('https://maven.pkg.github.com/to0mi1/swuit')
+            credentials {
+                username = project.findProperty('gpr.user') ?: System.getenv('GITHUB_ACTOR')
+                password = project.findProperty('gpr.key') ?: System.getenv('GITHUB_TOKEN')
+            }
+        }
+    }
+    publications {
+        gpr(MavenPublication) {
+            from components.java
+            groupId = 'org.to0mi1'
+            artifactId = 'swuit-core'
+        }
+    }
 }
