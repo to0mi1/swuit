@@ -1,0 +1,11 @@
+plugins {
+    id 'application'
+}
+
+dependencies {
+    implementation project(':demo-common')
+}
+
+application {
+    mainClass = 'org.to0mi1.swuit.demo.swing.Main'
+}
