@@ -1,8 +1,28 @@
+def gitVersion = {
+    try {
+        def proc = ['git', 'describe', '--tags', '--match', 'v*'].execute()
+        proc.waitFor()
+        if (proc.exitValue() != 0) return '0.0.0-SNAPSHOT'
+        def describe = proc.text.trim()
+        def match = (describe =~ /^v(\d+)\.(\d+)\.(\d+)(-(\d+)-g[0-9a-f]+)?$/)
+        if (match.matches()) {
+            def major = match.group(1)
+            def minor = match.group(2)
+            def patch = match.group(3) as int
+            if (match.group(4) != null) {
+                return "${major}.${minor}.${patch + 1}-SNAPSHOT"
+            }
+            return "${major}.${minor}.${patch}"
+        }
+    } catch (Exception ignored) {}
+    return '0.0.0-SNAPSHOT'
+}()
+
 subprojects {
     apply plugin: 'java'
 
     group = 'org.to0mi1'
-    version = '1.0-SNAPSHOT'
+    version = gitVersion
 
     java {
         sourceCompatibility = JavaVersion.VERSION_17
