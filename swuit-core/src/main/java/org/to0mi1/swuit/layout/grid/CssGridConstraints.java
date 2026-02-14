@@ -3,7 +3,7 @@ package org.to0mi1.swuit.layout.grid;
 import java.awt.Insets;
 
 /**
- * {@link GridBoxLayout} の子コンポーネントに適用する制約。
+ * {@link CssGridLayout} の子コンポーネントに適用する制約。
  * <p>
  * Fluent API でチェーン記述が可能。
  * <p>
@@ -11,19 +11,19 @@ import java.awt.Insets;
  * 片方のみ指定した場合は自動配置として扱われる。
  *
  * <pre>{@code
- * panel.add(component, new GridConstraints()
+ * panel.add(component, new CssGridConstraints()
  *     .column(0).row(0).columnSpan(3)
- *     .justifySelf(JustifySelf.CENTER));
+ *     .justifySelf(CssJustifySelf.CENTER));
  * }</pre>
  */
-public class GridConstraints implements Cloneable {
+public class CssGridConstraints implements Cloneable {
 
     private int column = -1;
     private int row = -1;
     private int columnSpan = 1;
     private int rowSpan = 1;
-    private JustifySelf justifySelf = JustifySelf.AUTO;
-    private AlignSelf alignSelf = AlignSelf.AUTO;
+    private CssJustifySelf justifySelf = CssJustifySelf.AUTO;
+    private CssAlignSelf alignSelf = CssAlignSelf.AUTO;
     private Insets margin = new Insets(0, 0, 0, 0);
 
     // --- Fluent API ---
@@ -33,7 +33,7 @@ public class GridConstraints implements Cloneable {
      *
      * @throws IllegalArgumentException column が -1 未満の場合
      */
-    public GridConstraints column(int column) {
+    public CssGridConstraints column(int column) {
         if (column < -1) throw new IllegalArgumentException("column must be >= -1: " + column);
         this.column = column;
         return this;
@@ -44,7 +44,7 @@ public class GridConstraints implements Cloneable {
      *
      * @throws IllegalArgumentException row が -1 未満の場合
      */
-    public GridConstraints row(int row) {
+    public CssGridConstraints row(int row) {
         if (row < -1) throw new IllegalArgumentException("row must be >= -1: " + row);
         this.row = row;
         return this;
@@ -55,7 +55,7 @@ public class GridConstraints implements Cloneable {
      *
      * @throws IllegalArgumentException columnSpan が 1 未満の場合
      */
-    public GridConstraints columnSpan(int columnSpan) {
+    public CssGridConstraints columnSpan(int columnSpan) {
         if (columnSpan < 1) throw new IllegalArgumentException("columnSpan must be >= 1: " + columnSpan);
         this.columnSpan = columnSpan;
         return this;
@@ -66,20 +66,20 @@ public class GridConstraints implements Cloneable {
      *
      * @throws IllegalArgumentException rowSpan が 1 未満の場合
      */
-    public GridConstraints rowSpan(int rowSpan) {
+    public CssGridConstraints rowSpan(int rowSpan) {
         if (rowSpan < 1) throw new IllegalArgumentException("rowSpan must be >= 1: " + rowSpan);
         this.rowSpan = rowSpan;
         return this;
     }
 
     /** 個別の水平方向配置を設定する。 */
-    public GridConstraints justifySelf(JustifySelf justifySelf) {
+    public CssGridConstraints justifySelf(CssJustifySelf justifySelf) {
         this.justifySelf = justifySelf;
         return this;
     }
 
     /** 個別の垂直方向配置を設定する。 */
-    public GridConstraints alignSelf(AlignSelf alignSelf) {
+    public CssGridConstraints alignSelf(CssAlignSelf alignSelf) {
         this.alignSelf = alignSelf;
         return this;
     }
@@ -92,7 +92,7 @@ public class GridConstraints implements Cloneable {
      * @param bottom 下マージン
      * @param right  右マージン
      */
-    public GridConstraints margin(int top, int left, int bottom, int right) {
+    public CssGridConstraints margin(int top, int left, int bottom, int right) {
         this.margin = new Insets(top, left, bottom, right);
         return this;
     }
@@ -115,11 +115,11 @@ public class GridConstraints implements Cloneable {
         return rowSpan;
     }
 
-    JustifySelf getJustifySelf() {
+    CssJustifySelf getCssJustifySelf() {
         return justifySelf;
     }
 
-    AlignSelf getAlignSelf() {
+    CssAlignSelf getCssAlignSelf() {
         return alignSelf;
     }
 
@@ -130,9 +130,9 @@ public class GridConstraints implements Cloneable {
     // --- clone ---
 
     @Override
-    public GridConstraints clone() {
+    public CssGridConstraints clone() {
         try {
-            GridConstraints c = (GridConstraints) super.clone();
+            CssGridConstraints c = (CssGridConstraints) super.clone();
             c.margin = new Insets(margin.top, margin.left, margin.bottom, margin.right);
             return c;
         } catch (CloneNotSupportedException e) {

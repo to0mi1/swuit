@@ -3,7 +3,7 @@ package org.to0mi1.swuit.layout.flex;
 /**
  * 複数ラインの副軸方向の配置。wrap モードでのみ効果がある。
  */
-public enum AlignContent {
+public enum CssAlignContent {
     /** 副軸の開始端に寄せる。 */
     FLEX_START,
     /** 副軸の終了端に寄せる。 */

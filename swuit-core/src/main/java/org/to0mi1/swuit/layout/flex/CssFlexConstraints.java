@@ -3,21 +3,21 @@ package org.to0mi1.swuit.layout.flex;
 import java.awt.Insets;
 
 /**
- * {@link FlexBoxLayout} の子コンポーネントに適用する制約。
+ * {@link CssFlexLayout} の子コンポーネントに適用する制約。
  * <p>
  * Fluent API でチェーン記述が可能。
  *
  * <pre>{@code
- * panel.add(component, new FlexConstraints()
- *     .flexGrow(1).alignSelf(AlignSelf.CENTER).margin(5, 10, 5, 10));
+ * panel.add(component, new CssFlexConstraints()
+ *     .flexGrow(1).alignSelf(CssAlignSelf.CENTER).margin(5, 10, 5, 10));
  * }</pre>
  */
-public class FlexConstraints implements Cloneable {
+public class CssFlexConstraints implements Cloneable {
 
     private float flexGrow = 0;
     private float flexShrink = 1;
     private float flexBasisPercent = -1;
-    private AlignSelf alignSelf = AlignSelf.AUTO;
+    private CssAlignSelf alignSelf = CssAlignSelf.AUTO;
     private int order = 0;
     private int minWidth = -1;
     private int minHeight = -1;
@@ -28,55 +28,55 @@ public class FlexConstraints implements Cloneable {
     // --- Fluent API ---
 
     /** 余剰スペースの分配比率を設定する。 */
-    public FlexConstraints flexGrow(float flexGrow) {
+    public CssFlexConstraints flexGrow(float flexGrow) {
         this.flexGrow = flexGrow;
         return this;
     }
 
     /** 不足時の縮小比率を設定する。 */
-    public FlexConstraints flexShrink(float flexShrink) {
+    public CssFlexConstraints flexShrink(float flexShrink) {
         this.flexShrink = flexShrink;
         return this;
     }
 
     /** 初期サイズ (%) を設定する。-1 で preferredSize を使用。 */
-    public FlexConstraints flexBasisPercent(float flexBasisPercent) {
+    public CssFlexConstraints flexBasisPercent(float flexBasisPercent) {
         this.flexBasisPercent = flexBasisPercent;
         return this;
     }
 
     /** 個別の副軸配置を設定する。 */
-    public FlexConstraints alignSelf(AlignSelf alignSelf) {
+    public CssFlexConstraints alignSelf(CssAlignSelf alignSelf) {
         this.alignSelf = alignSelf;
         return this;
     }
 
     /** 表示順序を設定する。 */
-    public FlexConstraints order(int order) {
+    public CssFlexConstraints order(int order) {
         this.order = order;
         return this;
     }
 
     /** 最小幅を設定する。-1 で minimumSize を使用。 */
-    public FlexConstraints minWidth(int minWidth) {
+    public CssFlexConstraints minWidth(int minWidth) {
         this.minWidth = minWidth;
         return this;
     }
 
     /** 最小高さを設定する。-1 で minimumSize を使用。 */
-    public FlexConstraints minHeight(int minHeight) {
+    public CssFlexConstraints minHeight(int minHeight) {
         this.minHeight = minHeight;
         return this;
     }
 
     /** 最大幅を設定する。-1 で無制限。 */
-    public FlexConstraints maxWidth(int maxWidth) {
+    public CssFlexConstraints maxWidth(int maxWidth) {
         this.maxWidth = maxWidth;
         return this;
     }
 
     /** 最大高さを設定する。-1 で無制限。 */
-    public FlexConstraints maxHeight(int maxHeight) {
+    public CssFlexConstraints maxHeight(int maxHeight) {
         this.maxHeight = maxHeight;
         return this;
     }
@@ -89,7 +89,7 @@ public class FlexConstraints implements Cloneable {
      * @param bottom 下マージン
      * @param right  右マージン
      */
-    public FlexConstraints margin(int top, int left, int bottom, int right) {
+    public CssFlexConstraints margin(int top, int left, int bottom, int right) {
         this.margin = new Insets(top, left, bottom, right);
         return this;
     }
@@ -108,7 +108,7 @@ public class FlexConstraints implements Cloneable {
         return flexBasisPercent;
     }
 
-    AlignSelf getAlignSelf() {
+    CssAlignSelf getCssAlignSelf() {
         return alignSelf;
     }
 
@@ -139,9 +139,9 @@ public class FlexConstraints implements Cloneable {
     // --- clone ---
 
     @Override
-    public FlexConstraints clone() {
+    public CssFlexConstraints clone() {
         try {
-            FlexConstraints c = (FlexConstraints) super.clone();
+            CssFlexConstraints c = (CssFlexConstraints) super.clone();
             c.margin = new Insets(margin.top, margin.left, margin.bottom, margin.right);
             return c;
         } catch (CloneNotSupportedException e) {

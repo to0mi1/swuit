@@ -12,11 +12,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class FlexBoxLayoutTest {
+class CssFlexLayoutTest {
 
     // === ヘルパー ===
 
-    static JPanel createContainer(FlexBoxLayout layout, int width, int height) {
+    static JPanel createContainer(CssFlexLayout layout, int width, int height) {
         JPanel panel = new JPanel(layout);
         panel.setSize(width, height);
         return panel;
@@ -37,7 +37,7 @@ class FlexBoxLayoutTest {
 
     @Test
     void preferredSize_row_basic() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW);
         JPanel panel = createContainer(layout, 400, 200);
         panel.add(fixedSize(100, 30));
         panel.add(fixedSize(50, 40));
@@ -49,7 +49,7 @@ class FlexBoxLayoutTest {
 
     @Test
     void preferredSize_column_basic() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.COLUMN);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.COLUMN);
         JPanel panel = createContainer(layout, 400, 200);
         panel.add(fixedSize(100, 30));
         panel.add(fixedSize(50, 40));
@@ -61,7 +61,7 @@ class FlexBoxLayoutTest {
 
     @Test
     void preferredSize_withGap() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW).setMainAxisGap(10);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW).setMainAxisGap(10);
         JPanel panel = createContainer(layout, 400, 200);
         panel.add(fixedSize(100, 30));
         panel.add(fixedSize(50, 30));
@@ -73,10 +73,10 @@ class FlexBoxLayoutTest {
 
     @Test
     void preferredSize_withMargin() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW);
         JPanel panel = createContainer(layout, 400, 200);
         Component c = fixedSize(100, 30);
-        panel.add(c, new FlexConstraints().margin(5, 10, 5, 10));
+        panel.add(c, new CssFlexConstraints().margin(5, 10, 5, 10));
 
         Dimension pref = layout.preferredLayoutSize(panel);
         assertEquals(120, pref.width);  // 100 + 10 + 10
@@ -85,7 +85,7 @@ class FlexBoxLayoutTest {
 
     @Test
     void preferredSize_withInsets() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW);
         JPanel panel = new JPanel(layout) {
             @Override
             public Insets getInsets() {
@@ -102,7 +102,7 @@ class FlexBoxLayoutTest {
 
     @Test
     void preferredSize_invisibleSkipped() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW).setMainAxisGap(10);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW).setMainAxisGap(10);
         JPanel panel = createContainer(layout, 400, 200);
         panel.add(fixedSize(100, 30));
         Component invisible = fixedSize(50, 30);
@@ -116,7 +116,7 @@ class FlexBoxLayoutTest {
 
     @Test
     void preferredSize_emptyContainer() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW);
         JPanel panel = createContainer(layout, 400, 200);
 
         Dimension pref = layout.preferredLayoutSize(panel);
@@ -128,7 +128,7 @@ class FlexBoxLayoutTest {
 
     @Test
     void layout_row_basic() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW);
         JPanel panel = createContainer(layout, 400, 100);
         Component a = fixedSize(100, 30);
         Component b = fixedSize(50, 40);
@@ -143,7 +143,7 @@ class FlexBoxLayoutTest {
 
     @Test
     void layout_row_withGap() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW).setMainAxisGap(10);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW).setMainAxisGap(10);
         JPanel panel = createContainer(layout, 400, 100);
         Component a = fixedSize(100, 30);
         Component b = fixedSize(50, 30);
@@ -157,10 +157,10 @@ class FlexBoxLayoutTest {
 
     @Test
     void layout_row_withMargin() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW);
         JPanel panel = createContainer(layout, 400, 100);
         Component a = fixedSize(100, 30);
-        panel.add(a, new FlexConstraints().margin(5, 10, 5, 10));
+        panel.add(a, new CssFlexConstraints().margin(5, 10, 5, 10));
         panel.doLayout();
 
         // margin: top=5, left=10, bottom=5, right=10
@@ -170,7 +170,7 @@ class FlexBoxLayoutTest {
 
     @Test
     void layout_row_withInsets() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW);
         JPanel panel = new JPanel(layout) {
             @Override
             public Insets getInsets() {
@@ -188,7 +188,7 @@ class FlexBoxLayoutTest {
 
     @Test
     void layout_invisibleSkipped() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW);
         JPanel panel = createContainer(layout, 400, 100);
         Component a = fixedSize(100, 30);
         Component invisible = fixedSize(50, 30);
@@ -207,14 +207,14 @@ class FlexBoxLayoutTest {
 
     @Test
     void flexGrow_equalDistribution() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW);
         JPanel panel = createContainer(layout, 300, 100);
         Component a = fixedSize(10, 30);
         Component b = fixedSize(10, 30);
         Component c = fixedSize(10, 30);
-        panel.add(a, new FlexConstraints().flexGrow(1));
-        panel.add(b, new FlexConstraints().flexGrow(1));
-        panel.add(c, new FlexConstraints().flexGrow(1));
+        panel.add(a, new CssFlexConstraints().flexGrow(1));
+        panel.add(b, new CssFlexConstraints().flexGrow(1));
+        panel.add(c, new CssFlexConstraints().flexGrow(1));
         panel.doLayout();
 
         assertEquals(100, boundsOf(a).width);
@@ -224,12 +224,12 @@ class FlexBoxLayoutTest {
 
     @Test
     void flexGrow_unequalDistribution() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW);
         JPanel panel = createContainer(layout, 400, 100);
         Component a = fixedSize(0, 30);
         Component b = fixedSize(0, 30);
-        panel.add(a, new FlexConstraints().flexGrow(1));
-        panel.add(b, new FlexConstraints().flexGrow(3));
+        panel.add(a, new CssFlexConstraints().flexGrow(1));
+        panel.add(b, new CssFlexConstraints().flexGrow(3));
         panel.doLayout();
 
         assertEquals(100, boundsOf(a).width);
@@ -238,12 +238,12 @@ class FlexBoxLayoutTest {
 
     @Test
     void flexGrow_mixedWithFixed() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW);
         JPanel panel = createContainer(layout, 300, 100);
         Component fixed = fixedSize(100, 30);
         Component weighted = fixedSize(10, 30);
         panel.add(fixed);
-        panel.add(weighted, new FlexConstraints().flexGrow(1));
+        panel.add(weighted, new CssFlexConstraints().flexGrow(1));
         panel.doLayout();
 
         assertEquals(100, boundsOf(fixed).width);
@@ -252,14 +252,14 @@ class FlexBoxLayoutTest {
 
     @Test
     void flexGrow_noExcess() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW);
         JPanel panel = createContainer(layout, 110, 100);
         Component a = fixedSize(50, 30);
         Component b = fixedSize(50, 30);
         Component c = fixedSize(10, 30);
         panel.add(a);
         panel.add(b);
-        panel.add(c, new FlexConstraints().flexGrow(1));
+        panel.add(c, new CssFlexConstraints().flexGrow(1));
         panel.doLayout();
 
         // 50+50+10=110、余剰なし → grow の子は元のサイズ
@@ -272,7 +272,7 @@ class FlexBoxLayoutTest {
 
     @Test
     void layout_column_basic() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.COLUMN);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.COLUMN);
         JPanel panel = createContainer(layout, 200, 400);
         Component a = fixedSize(100, 30);
         Component b = fixedSize(50, 40);
@@ -287,7 +287,7 @@ class FlexBoxLayoutTest {
 
     @Test
     void layout_rowReverse() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW_REVERSE);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW_REVERSE);
         JPanel panel = createContainer(layout, 300, 100);
         Component a = fixedSize(100, 30);
         Component b = fixedSize(50, 30);
@@ -302,7 +302,7 @@ class FlexBoxLayoutTest {
 
     @Test
     void layout_columnReverse() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.COLUMN_REVERSE);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.COLUMN_REVERSE);
         JPanel panel = createContainer(layout, 200, 300);
         Component a = fixedSize(100, 30);
         Component b = fixedSize(50, 40);
@@ -317,14 +317,14 @@ class FlexBoxLayoutTest {
 
     @Test
     void flexGrow_column() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.COLUMN);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.COLUMN);
         JPanel panel = createContainer(layout, 200, 300);
         Component a = fixedSize(100, 10);
         Component b = fixedSize(100, 10);
         Component c = fixedSize(100, 10);
-        panel.add(a, new FlexConstraints().flexGrow(1));
-        panel.add(b, new FlexConstraints().flexGrow(1));
-        panel.add(c, new FlexConstraints().flexGrow(1));
+        panel.add(a, new CssFlexConstraints().flexGrow(1));
+        panel.add(b, new CssFlexConstraints().flexGrow(1));
+        panel.add(c, new CssFlexConstraints().flexGrow(1));
         panel.doLayout();
 
         assertEquals(100, boundsOf(a).height);
@@ -336,8 +336,8 @@ class FlexBoxLayoutTest {
 
     @Test
     void justifyContent_flexEnd() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW)
-                .setJustifyContent(JustifyContent.FLEX_END);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW)
+                .setCssJustifyContent(CssJustifyContent.FLEX_END);
         JPanel panel = createContainer(layout, 300, 100);
         Component a = fixedSize(100, 30);
         panel.add(a);
@@ -348,8 +348,8 @@ class FlexBoxLayoutTest {
 
     @Test
     void justifyContent_center() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW)
-                .setJustifyContent(JustifyContent.CENTER);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW)
+                .setCssJustifyContent(CssJustifyContent.CENTER);
         JPanel panel = createContainer(layout, 300, 100);
         Component a = fixedSize(100, 30);
         panel.add(a);
@@ -360,8 +360,8 @@ class FlexBoxLayoutTest {
 
     @Test
     void justifyContent_spaceBetween() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW)
-                .setJustifyContent(JustifyContent.SPACE_BETWEEN);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW)
+                .setCssJustifyContent(CssJustifyContent.SPACE_BETWEEN);
         JPanel panel = createContainer(layout, 300, 100);
         Component a = fixedSize(50, 30);
         Component b = fixedSize(50, 30);
@@ -379,8 +379,8 @@ class FlexBoxLayoutTest {
 
     @Test
     void justifyContent_spaceAround() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW)
-                .setJustifyContent(JustifyContent.SPACE_AROUND);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW)
+                .setCssJustifyContent(CssJustifyContent.SPACE_AROUND);
         JPanel panel = createContainer(layout, 300, 100);
         Component a = fixedSize(60, 30);
         Component b = fixedSize(60, 30);
@@ -395,8 +395,8 @@ class FlexBoxLayoutTest {
 
     @Test
     void justifyContent_spaceEvenly() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW)
-                .setJustifyContent(JustifyContent.SPACE_EVENLY);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW)
+                .setCssJustifyContent(CssJustifyContent.SPACE_EVENLY);
         JPanel panel = createContainer(layout, 300, 100);
         Component a = fixedSize(60, 30);
         Component b = fixedSize(60, 30);
@@ -413,14 +413,14 @@ class FlexBoxLayoutTest {
 
     @Test
     void order_sort() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW);
         JPanel panel = createContainer(layout, 300, 100);
         Component a = fixedSize(100, 30);
         Component b = fixedSize(100, 30);
         Component c = fixedSize(100, 30);
-        panel.add(a, new FlexConstraints().order(2));
-        panel.add(b, new FlexConstraints().order(0));
-        panel.add(c, new FlexConstraints().order(1));
+        panel.add(a, new CssFlexConstraints().order(2));
+        panel.add(b, new CssFlexConstraints().order(0));
+        panel.add(c, new CssFlexConstraints().order(1));
         panel.doLayout();
 
         // order: b(0), c(1), a(2)
@@ -433,7 +433,7 @@ class FlexBoxLayoutTest {
 
     @Test
     void addWithInvalidConstraints_throws() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW);
         JPanel panel = createContainer(layout, 300, 100);
         Component a = fixedSize(100, 30);
         assertThrows(IllegalArgumentException.class, () -> panel.add(a, "invalid"));

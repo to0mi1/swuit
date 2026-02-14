@@ -1,9 +1,11 @@
 package org.to0mi1.swuit.layout.grid;
 
 /**
- * セル内の水平方向の配置（コンテナレベル）。
+ * 個別アイテムの水平方向の配置。{@link CssJustifyItems} をアイテム単位でオーバーライドする。
  */
-public enum JustifyItems {
+public enum CssJustifySelf {
+    /** コンテナの {@link CssJustifyItems} に従う。 */
+    AUTO,
     /** セルの左端に寄せる。 */
     START,
     /** セルの右端に寄せる。 */

@@ -5,10 +5,10 @@ import java.awt.Component;
 /**
  * レイアウト計算用の1アイテムデータ。
  */
-class GridItem {
+class CssGridItem {
 
     final Component component;
-    final GridConstraints constraints;
+    final CssGridConstraints constraints;
     final int addOrder;
 
     // 解決済みグリッド位置
@@ -17,7 +17,7 @@ class GridItem {
     int columnSpan;
     int rowSpan;
 
-    GridItem(Component component, GridConstraints constraints, int addOrder) {
+    CssGridItem(Component component, CssGridConstraints constraints, int addOrder) {
         this.component = component;
         this.constraints = constraints;
         this.addOrder = addOrder;

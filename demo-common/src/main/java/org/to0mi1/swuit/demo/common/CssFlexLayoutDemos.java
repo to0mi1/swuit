@@ -7,38 +7,38 @@ import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import org.to0mi1.swuit.layout.flex.AlignItems;
-import org.to0mi1.swuit.layout.flex.AlignSelf;
-import org.to0mi1.swuit.layout.flex.FlexBoxLayout;
-import org.to0mi1.swuit.layout.flex.FlexConstraints;
-import org.to0mi1.swuit.layout.flex.FlexDirection;
-import org.to0mi1.swuit.layout.flex.FlexWrap;
-import org.to0mi1.swuit.layout.flex.JustifyContent;
+import org.to0mi1.swuit.layout.flex.CssAlignItems;
+import org.to0mi1.swuit.layout.flex.CssAlignSelf;
+import org.to0mi1.swuit.layout.flex.CssFlexLayout;
+import org.to0mi1.swuit.layout.flex.CssFlexConstraints;
+import org.to0mi1.swuit.layout.flex.CssFlexDirection;
+import org.to0mi1.swuit.layout.flex.CssFlexWrap;
+import org.to0mi1.swuit.layout.flex.CssJustifyContent;
 
 /**
- * FlexBoxLayout デモパネル生成ユーティリティ。
+ * CssFlexLayout デモパネル生成ユーティリティ。
  */
-public final class FlexBoxLayoutDemos {
+public final class CssFlexLayoutDemos {
 
-    private FlexBoxLayoutDemos() {
+    private CssFlexLayoutDemos() {
     }
 
     /** FlexBox: ROW + flexGrow */
     public static JComponent flexBasic() {
-        JPanel panel = new JPanel(new FlexBoxLayout(FlexDirection.ROW).setMainAxisGap(4));
+        JPanel panel = new JPanel(new CssFlexLayout(CssFlexDirection.ROW).setMainAxisGap(4));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         panel.add(DemoPanels.colorPanel(new Color(0x4CAF50), "固定 100px"));
         panel.getComponent(0).setPreferredSize(new Dimension(100, 40));
-        panel.add(DemoPanels.colorPanel(new Color(0x2196F3), "grow=1"), new FlexConstraints().flexGrow(1));
-        panel.add(DemoPanels.colorPanel(new Color(0xFF9800), "grow=2"), new FlexConstraints().flexGrow(2));
+        panel.add(DemoPanels.colorPanel(new Color(0x2196F3), "grow=1"), new CssFlexConstraints().flexGrow(1));
+        panel.add(DemoPanels.colorPanel(new Color(0xFF9800), "grow=2"), new CssFlexConstraints().flexGrow(2));
         return panel;
     }
 
-    /** FlexBox: WRAP + JustifyContent */
+    /** FlexBox: WRAP + CssJustifyContent */
     public static JComponent flexWrap() {
-        JPanel panel = new JPanel(new FlexBoxLayout(FlexDirection.ROW)
-                .setFlexWrap(FlexWrap.WRAP)
-                .setJustifyContent(JustifyContent.SPACE_AROUND)
+        JPanel panel = new JPanel(new CssFlexLayout(CssFlexDirection.ROW)
+                .setCssFlexWrap(CssFlexWrap.WRAP)
+                .setCssJustifyContent(CssJustifyContent.SPACE_AROUND)
                 .setMainAxisGap(8)
                 .setCrossAxisGap(8));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -57,29 +57,29 @@ public final class FlexBoxLayoutDemos {
 
     /** FlexBox: alignItems + alignSelf */
     public static JComponent flexAlign() {
-        JPanel panel = new JPanel(new FlexBoxLayout(FlexDirection.ROW)
-                .setAlignItems(AlignItems.CENTER)
+        JPanel panel = new JPanel(new CssFlexLayout(CssFlexDirection.ROW)
+                .setCssAlignItems(CssAlignItems.CENTER)
                 .setMainAxisGap(8));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         JPanel a = DemoPanels.colorPanel(new Color(0x4CAF50), "STRETCH");
         a.setPreferredSize(new Dimension(100, 40));
-        panel.add(a, new FlexConstraints().flexGrow(1)
-                .alignSelf(AlignSelf.STRETCH));
+        panel.add(a, new CssFlexConstraints().flexGrow(1)
+                .alignSelf(CssAlignSelf.STRETCH));
 
         JPanel b = DemoPanels.colorPanel(new Color(0x2196F3), "CENTER");
         b.setPreferredSize(new Dimension(100, 60));
-        panel.add(b, new FlexConstraints().flexGrow(1));
+        panel.add(b, new CssFlexConstraints().flexGrow(1));
 
         JPanel c = DemoPanels.colorPanel(new Color(0xFF9800), "FLEX_END");
         c.setPreferredSize(new Dimension(100, 30));
-        panel.add(c, new FlexConstraints().flexGrow(1)
-                .alignSelf(AlignSelf.FLEX_END));
+        panel.add(c, new CssFlexConstraints().flexGrow(1)
+                .alignSelf(CssAlignSelf.FLEX_END));
 
         JPanel d = DemoPanels.colorPanel(new Color(0xE91E63), "FLEX_START");
         d.setPreferredSize(new Dimension(100, 50));
-        panel.add(d, new FlexConstraints().flexGrow(1)
-                .alignSelf(AlignSelf.FLEX_START));
+        panel.add(d, new CssFlexConstraints().flexGrow(1)
+                .alignSelf(CssAlignSelf.FLEX_START));
 
         return panel;
     }

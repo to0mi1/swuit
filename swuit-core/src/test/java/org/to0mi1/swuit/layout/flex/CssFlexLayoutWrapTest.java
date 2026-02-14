@@ -10,16 +10,16 @@ import javax.swing.JPanel;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.to0mi1.swuit.layout.flex.FlexBoxLayoutTest.*;
+import static org.to0mi1.swuit.layout.flex.CssFlexLayoutTest.*;
 
-class FlexBoxLayoutWrapTest {
+class CssFlexLayoutWrapTest {
 
     // === WRAP 基本 ===
 
     @Test
     void wrap_basicLineBreak() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW)
-                .setFlexWrap(FlexWrap.WRAP);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW)
+                .setCssFlexWrap(CssFlexWrap.WRAP);
         JPanel panel = createContainer(layout, 250, 200);
         Component a = fixedSize(100, 30);
         Component b = fixedSize(100, 30);
@@ -39,8 +39,8 @@ class FlexBoxLayoutWrapTest {
 
     @Test
     void wrap_singleLine() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW)
-                .setFlexWrap(FlexWrap.WRAP);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW)
+                .setCssFlexWrap(CssFlexWrap.WRAP);
         JPanel panel = createContainer(layout, 400, 200);
         Component a = fixedSize(100, 30);
         Component b = fixedSize(100, 30);
@@ -56,8 +56,8 @@ class FlexBoxLayoutWrapTest {
 
     @Test
     void wrap_withGap() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW)
-                .setFlexWrap(FlexWrap.WRAP)
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW)
+                .setCssFlexWrap(CssFlexWrap.WRAP)
                 .setMainAxisGap(20);
         JPanel panel = createContainer(layout, 250, 200);
         Component a = fixedSize(100, 30);
@@ -79,8 +79,8 @@ class FlexBoxLayoutWrapTest {
 
     @Test
     void wrapReverse_linesInReverseCrossOrder() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW)
-                .setFlexWrap(FlexWrap.WRAP_REVERSE);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW)
+                .setCssFlexWrap(CssFlexWrap.WRAP_REVERSE);
         JPanel panel = createContainer(layout, 150, 200);
         Component a = fixedSize(100, 30);
         Component b = fixedSize(100, 30);
@@ -96,9 +96,9 @@ class FlexBoxLayoutWrapTest {
 
     @Test
     void alignContent_flexStart() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW)
-                .setFlexWrap(FlexWrap.WRAP)
-                .setAlignContent(AlignContent.FLEX_START);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW)
+                .setCssFlexWrap(CssFlexWrap.WRAP)
+                .setCssAlignContent(CssAlignContent.FLEX_START);
         JPanel panel = createContainer(layout, 100, 300);
         Component a = fixedSize(80, 30);
         Component b = fixedSize(80, 30);
@@ -112,9 +112,9 @@ class FlexBoxLayoutWrapTest {
 
     @Test
     void alignContent_center() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW)
-                .setFlexWrap(FlexWrap.WRAP)
-                .setAlignContent(AlignContent.CENTER);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW)
+                .setCssFlexWrap(CssFlexWrap.WRAP)
+                .setCssAlignContent(CssAlignContent.CENTER);
         JPanel panel = createContainer(layout, 100, 300);
         Component a = fixedSize(80, 30);
         Component b = fixedSize(80, 30);
@@ -128,9 +128,9 @@ class FlexBoxLayoutWrapTest {
 
     @Test
     void alignContent_spaceBetween() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW)
-                .setFlexWrap(FlexWrap.WRAP)
-                .setAlignContent(AlignContent.SPACE_BETWEEN);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW)
+                .setCssFlexWrap(CssFlexWrap.WRAP)
+                .setCssAlignContent(CssAlignContent.SPACE_BETWEEN);
         JPanel panel = createContainer(layout, 100, 300);
         Component a = fixedSize(80, 30);
         Component b = fixedSize(80, 30);

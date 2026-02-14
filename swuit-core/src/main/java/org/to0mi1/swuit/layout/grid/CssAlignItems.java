@@ -1,11 +1,9 @@
 package org.to0mi1.swuit.layout.grid;
 
 /**
- * 個別アイテムの垂直方向の配置。{@link AlignItems} をアイテム単位でオーバーライドする。
+ * セル内の垂直方向の配置（コンテナレベル）。
  */
-public enum AlignSelf {
-    /** コンテナの {@link AlignItems} に従う。 */
-    AUTO,
+public enum CssAlignItems {
     /** セルの上端に寄せる。 */
     START,
     /** セルの下端に寄せる。 */

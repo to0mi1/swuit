@@ -3,7 +3,7 @@ package org.to0mi1.swuit.layout.grid;
 /**
  * トラックサイズの種別。
  */
-enum TrackSizeType {
+enum CssTrackSizeType {
     /** 固定ピクセルサイズ。 */
     FIXED,
     /** 余剰スペースの分配比率。 */

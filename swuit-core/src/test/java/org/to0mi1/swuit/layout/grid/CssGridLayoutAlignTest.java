@@ -6,21 +6,21 @@ import java.awt.Rectangle;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.to0mi1.swuit.layout.grid.GridBoxLayoutTest.*;
+import static org.to0mi1.swuit.layout.grid.CssGridLayoutTest.*;
 
-class GridBoxLayoutAlignTest {
+class CssGridLayoutAlignTest {
 
     // === justifyItems ===
 
     @Test
     void justifyItems_start() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(200))
-                .setJustifyItems(JustifyItems.START);
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(200))
+                .setCssJustifyItems(CssJustifyItems.START);
         javax.swing.JPanel panel = createContainer(layout, 200, 100);
 
         Component a = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0));
+        panel.add(a, new CssGridConstraints().column(0).row(0));
         panel.doLayout();
 
         assertEquals(0, boundsOf(a).x);
@@ -29,13 +29,13 @@ class GridBoxLayoutAlignTest {
 
     @Test
     void justifyItems_end() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(200))
-                .setJustifyItems(JustifyItems.END);
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(200))
+                .setCssJustifyItems(CssJustifyItems.END);
         javax.swing.JPanel panel = createContainer(layout, 200, 100);
 
         Component a = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0));
+        panel.add(a, new CssGridConstraints().column(0).row(0));
         panel.doLayout();
 
         assertEquals(120, boundsOf(a).x);
@@ -44,13 +44,13 @@ class GridBoxLayoutAlignTest {
 
     @Test
     void justifyItems_center() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(200))
-                .setJustifyItems(JustifyItems.CENTER);
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(200))
+                .setCssJustifyItems(CssJustifyItems.CENTER);
         javax.swing.JPanel panel = createContainer(layout, 200, 100);
 
         Component a = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0));
+        panel.add(a, new CssGridConstraints().column(0).row(0));
         panel.doLayout();
 
         assertEquals(60, boundsOf(a).x);
@@ -59,13 +59,13 @@ class GridBoxLayoutAlignTest {
 
     @Test
     void justifyItems_stretch() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(200))
-                .setJustifyItems(JustifyItems.STRETCH);
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(200))
+                .setCssJustifyItems(CssJustifyItems.STRETCH);
         javax.swing.JPanel panel = createContainer(layout, 200, 100);
 
         Component a = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0));
+        panel.add(a, new CssGridConstraints().column(0).row(0));
         panel.doLayout();
 
         assertEquals(0, boundsOf(a).x);
@@ -76,14 +76,14 @@ class GridBoxLayoutAlignTest {
 
     @Test
     void alignItems_start() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(200))
-                .setRowTemplate(TrackSize.fixed(100))
-                .setAlignItems(AlignItems.START);
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(200))
+                .setRowTemplate(CssTrackSize.fixed(100))
+                .setCssAlignItems(CssAlignItems.START);
         javax.swing.JPanel panel = createContainer(layout, 200, 100);
 
         Component a = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0));
+        panel.add(a, new CssGridConstraints().column(0).row(0));
         panel.doLayout();
 
         assertEquals(0, boundsOf(a).y);
@@ -92,14 +92,14 @@ class GridBoxLayoutAlignTest {
 
     @Test
     void alignItems_end() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(200))
-                .setRowTemplate(TrackSize.fixed(100))
-                .setAlignItems(AlignItems.END);
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(200))
+                .setRowTemplate(CssTrackSize.fixed(100))
+                .setCssAlignItems(CssAlignItems.END);
         javax.swing.JPanel panel = createContainer(layout, 200, 100);
 
         Component a = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0));
+        panel.add(a, new CssGridConstraints().column(0).row(0));
         panel.doLayout();
 
         assertEquals(70, boundsOf(a).y);
@@ -108,14 +108,14 @@ class GridBoxLayoutAlignTest {
 
     @Test
     void alignItems_center() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(200))
-                .setRowTemplate(TrackSize.fixed(100))
-                .setAlignItems(AlignItems.CENTER);
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(200))
+                .setRowTemplate(CssTrackSize.fixed(100))
+                .setCssAlignItems(CssAlignItems.CENTER);
         javax.swing.JPanel panel = createContainer(layout, 200, 100);
 
         Component a = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0));
+        panel.add(a, new CssGridConstraints().column(0).row(0));
         panel.doLayout();
 
         assertEquals(35, boundsOf(a).y);
@@ -124,14 +124,14 @@ class GridBoxLayoutAlignTest {
 
     @Test
     void alignItems_stretch() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(200))
-                .setRowTemplate(TrackSize.fixed(100))
-                .setAlignItems(AlignItems.STRETCH);
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(200))
+                .setRowTemplate(CssTrackSize.fixed(100))
+                .setCssAlignItems(CssAlignItems.STRETCH);
         javax.swing.JPanel panel = createContainer(layout, 200, 100);
 
         Component a = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0));
+        panel.add(a, new CssGridConstraints().column(0).row(0));
         panel.doLayout();
 
         assertEquals(0, boundsOf(a).y);
@@ -142,13 +142,13 @@ class GridBoxLayoutAlignTest {
 
     @Test
     void justifySelf_overridesContainer() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(200))
-                .setJustifyItems(JustifyItems.STRETCH);
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(200))
+                .setCssJustifyItems(CssJustifyItems.STRETCH);
         javax.swing.JPanel panel = createContainer(layout, 200, 100);
 
         Component a = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0).justifySelf(JustifySelf.CENTER));
+        panel.add(a, new CssGridConstraints().column(0).row(0).justifySelf(CssJustifySelf.CENTER));
         panel.doLayout();
 
         assertEquals(60, boundsOf(a).x);
@@ -157,13 +157,13 @@ class GridBoxLayoutAlignTest {
 
     @Test
     void justifySelf_auto_fallsBackToContainer() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(200))
-                .setJustifyItems(JustifyItems.END);
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(200))
+                .setCssJustifyItems(CssJustifyItems.END);
         javax.swing.JPanel panel = createContainer(layout, 200, 100);
 
         Component a = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0).justifySelf(JustifySelf.AUTO));
+        panel.add(a, new CssGridConstraints().column(0).row(0).justifySelf(CssJustifySelf.AUTO));
         panel.doLayout();
 
         assertEquals(120, boundsOf(a).x);
@@ -174,14 +174,14 @@ class GridBoxLayoutAlignTest {
 
     @Test
     void alignSelf_overridesContainer() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(200))
-                .setRowTemplate(TrackSize.fixed(100))
-                .setAlignItems(AlignItems.STRETCH);
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(200))
+                .setRowTemplate(CssTrackSize.fixed(100))
+                .setCssAlignItems(CssAlignItems.STRETCH);
         javax.swing.JPanel panel = createContainer(layout, 200, 100);
 
         Component a = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0).alignSelf(AlignSelf.CENTER));
+        panel.add(a, new CssGridConstraints().column(0).row(0).alignSelf(CssAlignSelf.CENTER));
         panel.doLayout();
 
         assertEquals(35, boundsOf(a).y);
@@ -190,14 +190,14 @@ class GridBoxLayoutAlignTest {
 
     @Test
     void alignSelf_auto_fallsBackToContainer() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(200))
-                .setRowTemplate(TrackSize.fixed(100))
-                .setAlignItems(AlignItems.END);
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(200))
+                .setRowTemplate(CssTrackSize.fixed(100))
+                .setCssAlignItems(CssAlignItems.END);
         javax.swing.JPanel panel = createContainer(layout, 200, 100);
 
         Component a = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0).alignSelf(AlignSelf.AUTO));
+        panel.add(a, new CssGridConstraints().column(0).row(0).alignSelf(CssAlignSelf.AUTO));
         panel.doLayout();
 
         assertEquals(70, boundsOf(a).y);
@@ -208,13 +208,13 @@ class GridBoxLayoutAlignTest {
 
     @Test
     void margin_withStretch() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(200))
-                .setRowTemplate(TrackSize.fixed(100));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(200))
+                .setRowTemplate(CssTrackSize.fixed(100));
         javax.swing.JPanel panel = createContainer(layout, 200, 100);
 
         Component a = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0).margin(10, 20, 10, 20));
+        panel.add(a, new CssGridConstraints().column(0).row(0).margin(10, 20, 10, 20));
         panel.doLayout();
 
         assertEquals(20, boundsOf(a).x);
@@ -225,15 +225,15 @@ class GridBoxLayoutAlignTest {
 
     @Test
     void margin_withCenter() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(200))
-                .setRowTemplate(TrackSize.fixed(100))
-                .setJustifyItems(JustifyItems.CENTER)
-                .setAlignItems(AlignItems.CENTER);
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(200))
+                .setRowTemplate(CssTrackSize.fixed(100))
+                .setCssJustifyItems(CssJustifyItems.CENTER)
+                .setCssAlignItems(CssAlignItems.CENTER);
         javax.swing.JPanel panel = createContainer(layout, 200, 100);
 
         Component a = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0).margin(10, 20, 10, 20));
+        panel.add(a, new CssGridConstraints().column(0).row(0).margin(10, 20, 10, 20));
         panel.doLayout();
 
         // margin エリア: x=20, w=160, y=10, h=80
@@ -248,19 +248,19 @@ class GridBoxLayoutAlignTest {
 
     @Test
     void mixedAlignment_perItem() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(200))
-                .setRowTemplate(TrackSize.fixed(100), TrackSize.fixed(100))
-                .setJustifyItems(JustifyItems.STRETCH)
-                .setAlignItems(AlignItems.STRETCH);
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(200))
+                .setRowTemplate(CssTrackSize.fixed(100), CssTrackSize.fixed(100))
+                .setCssJustifyItems(CssJustifyItems.STRETCH)
+                .setCssAlignItems(CssAlignItems.STRETCH);
         javax.swing.JPanel panel = createContainer(layout, 200, 200);
 
         Component a = fixedSize(80, 30);
         Component b = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0)
-                .justifySelf(JustifySelf.START).alignSelf(AlignSelf.START));
-        panel.add(b, new GridConstraints().column(0).row(1)
-                .justifySelf(JustifySelf.END).alignSelf(AlignSelf.END));
+        panel.add(a, new CssGridConstraints().column(0).row(0)
+                .justifySelf(CssJustifySelf.START).alignSelf(CssAlignSelf.START));
+        panel.add(b, new CssGridConstraints().column(0).row(1)
+                .justifySelf(CssJustifySelf.END).alignSelf(CssAlignSelf.END));
         panel.doLayout();
 
         assertEquals(new Rectangle(0, 0, 80, 30), boundsOf(a));
@@ -271,14 +271,14 @@ class GridBoxLayoutAlignTest {
 
     @Test
     void margin_exceedsCellSize_clampedToZero() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(100))
-                .setRowTemplate(TrackSize.fixed(50));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(100))
+                .setRowTemplate(CssTrackSize.fixed(50));
         javax.swing.JPanel panel = createContainer(layout, 100, 50);
 
         Component a = fixedSize(80, 30);
         // margin 合計がセルサイズを超える: left(60) + right(60) = 120 > 100
-        panel.add(a, new GridConstraints().column(0).row(0).margin(30, 60, 30, 60));
+        panel.add(a, new CssGridConstraints().column(0).row(0).margin(30, 60, 30, 60));
         panel.doLayout();
 
         // 負サイズにならず、0 にクランプされる
@@ -290,12 +290,12 @@ class GridBoxLayoutAlignTest {
 
     @Test
     void justifySelf_start() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(200));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(200));
         javax.swing.JPanel panel = createContainer(layout, 200, 100);
 
         Component a = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0).justifySelf(JustifySelf.START));
+        panel.add(a, new CssGridConstraints().column(0).row(0).justifySelf(CssJustifySelf.START));
         panel.doLayout();
 
         assertEquals(0, boundsOf(a).x);
@@ -304,12 +304,12 @@ class GridBoxLayoutAlignTest {
 
     @Test
     void justifySelf_end() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(200));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(200));
         javax.swing.JPanel panel = createContainer(layout, 200, 100);
 
         Component a = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0).justifySelf(JustifySelf.END));
+        panel.add(a, new CssGridConstraints().column(0).row(0).justifySelf(CssJustifySelf.END));
         panel.doLayout();
 
         assertEquals(120, boundsOf(a).x);
@@ -318,12 +318,12 @@ class GridBoxLayoutAlignTest {
 
     @Test
     void justifySelf_stretch() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(200));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(200));
         javax.swing.JPanel panel = createContainer(layout, 200, 100);
 
         Component a = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0).justifySelf(JustifySelf.STRETCH));
+        panel.add(a, new CssGridConstraints().column(0).row(0).justifySelf(CssJustifySelf.STRETCH));
         panel.doLayout();
 
         assertEquals(0, boundsOf(a).x);
@@ -334,13 +334,13 @@ class GridBoxLayoutAlignTest {
 
     @Test
     void alignSelf_start() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(200))
-                .setRowTemplate(TrackSize.fixed(100));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(200))
+                .setRowTemplate(CssTrackSize.fixed(100));
         javax.swing.JPanel panel = createContainer(layout, 200, 100);
 
         Component a = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0).alignSelf(AlignSelf.START));
+        panel.add(a, new CssGridConstraints().column(0).row(0).alignSelf(CssAlignSelf.START));
         panel.doLayout();
 
         assertEquals(0, boundsOf(a).y);
@@ -349,13 +349,13 @@ class GridBoxLayoutAlignTest {
 
     @Test
     void alignSelf_end() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(200))
-                .setRowTemplate(TrackSize.fixed(100));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(200))
+                .setRowTemplate(CssTrackSize.fixed(100));
         javax.swing.JPanel panel = createContainer(layout, 200, 100);
 
         Component a = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0).alignSelf(AlignSelf.END));
+        panel.add(a, new CssGridConstraints().column(0).row(0).alignSelf(CssAlignSelf.END));
         panel.doLayout();
 
         assertEquals(70, boundsOf(a).y);
@@ -364,13 +364,13 @@ class GridBoxLayoutAlignTest {
 
     @Test
     void alignSelf_center() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(200))
-                .setRowTemplate(TrackSize.fixed(100));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(200))
+                .setRowTemplate(CssTrackSize.fixed(100));
         javax.swing.JPanel panel = createContainer(layout, 200, 100);
 
         Component a = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0).alignSelf(AlignSelf.CENTER));
+        panel.add(a, new CssGridConstraints().column(0).row(0).alignSelf(CssAlignSelf.CENTER));
         panel.doLayout();
 
         assertEquals(35, boundsOf(a).y);
@@ -379,13 +379,13 @@ class GridBoxLayoutAlignTest {
 
     @Test
     void alignSelf_stretch() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(200))
-                .setRowTemplate(TrackSize.fixed(100));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(200))
+                .setRowTemplate(CssTrackSize.fixed(100));
         javax.swing.JPanel panel = createContainer(layout, 200, 100);
 
         Component a = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0).alignSelf(AlignSelf.STRETCH));
+        panel.add(a, new CssGridConstraints().column(0).row(0).alignSelf(CssAlignSelf.STRETCH));
         panel.doLayout();
 
         assertEquals(0, boundsOf(a).y);
@@ -396,15 +396,15 @@ class GridBoxLayoutAlignTest {
 
     @Test
     void margin_withStart() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(200))
-                .setRowTemplate(TrackSize.fixed(100))
-                .setJustifyItems(JustifyItems.START)
-                .setAlignItems(AlignItems.START);
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(200))
+                .setRowTemplate(CssTrackSize.fixed(100))
+                .setCssJustifyItems(CssJustifyItems.START)
+                .setCssAlignItems(CssAlignItems.START);
         javax.swing.JPanel panel = createContainer(layout, 200, 100);
 
         Component a = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0).margin(5, 10, 5, 10));
+        panel.add(a, new CssGridConstraints().column(0).row(0).margin(5, 10, 5, 10));
         panel.doLayout();
 
         // margin エリア内の START
@@ -416,15 +416,15 @@ class GridBoxLayoutAlignTest {
 
     @Test
     void margin_withEnd() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(200))
-                .setRowTemplate(TrackSize.fixed(100))
-                .setJustifyItems(JustifyItems.END)
-                .setAlignItems(AlignItems.END);
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(200))
+                .setRowTemplate(CssTrackSize.fixed(100))
+                .setCssJustifyItems(CssJustifyItems.END)
+                .setCssAlignItems(CssAlignItems.END);
         javax.swing.JPanel panel = createContainer(layout, 200, 100);
 
         Component a = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0).margin(5, 10, 5, 10));
+        panel.add(a, new CssGridConstraints().column(0).row(0).margin(5, 10, 5, 10));
         panel.doLayout();
 
         // margin エリア: x=10, w=180, y=5, h=90

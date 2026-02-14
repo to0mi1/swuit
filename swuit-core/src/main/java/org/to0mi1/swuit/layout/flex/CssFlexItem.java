@@ -6,9 +6,9 @@ import java.awt.Insets;
 /**
  * レイアウト計算用の1アイテムデータ。
  */
-class FlexItem {
+class CssFlexItem {
     final Component component;
-    final FlexConstraints constraints;
+    final CssFlexConstraints constraints;
     final int addOrder; // 追加順（安定ソート用）
 
     // flex-basis（主軸方向の初期サイズ）
@@ -22,7 +22,7 @@ class FlexItem {
 
     boolean frozen; // grow/shrink 計算でフリーズ済みか
 
-    FlexItem(Component component, FlexConstraints constraints, int addOrder) {
+    CssFlexItem(Component component, CssFlexConstraints constraints, int addOrder) {
         this.component = component;
         this.constraints = constraints;
         this.addOrder = addOrder;

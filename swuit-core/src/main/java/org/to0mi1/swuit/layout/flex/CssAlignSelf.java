@@ -1,9 +1,11 @@
 package org.to0mi1.swuit.layout.flex;
 
 /**
- * 副軸方向のアイテム配置（コンテナレベル）。
+ * 個別アイテムの副軸方向の配置。{@link CssAlignItems} をアイテム単位でオーバーライドする。
  */
-public enum AlignItems {
+public enum CssAlignSelf {
+    /** コンテナの {@link CssAlignItems} に従う。 */
+    AUTO,
     /** 副軸の開始端に寄せる。 */
     FLEX_START,
     /** 副軸の終了端に寄せる。 */

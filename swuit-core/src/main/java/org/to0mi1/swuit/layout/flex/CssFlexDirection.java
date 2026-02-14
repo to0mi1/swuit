@@ -3,7 +3,7 @@ package org.to0mi1.swuit.layout.flex;
 /**
  * フレックスコンテナの主軸方向。
  */
-public enum FlexDirection {
+public enum CssFlexDirection {
     /** 左から右（水平）。 */
     ROW,
     /** 右から左（水平逆順）。 */

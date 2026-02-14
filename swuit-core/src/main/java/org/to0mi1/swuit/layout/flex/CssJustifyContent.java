@@ -3,7 +3,7 @@ package org.to0mi1.swuit.layout.flex;
 /**
  * 主軸方向のアイテム配置。
  */
-public enum JustifyContent {
+public enum CssJustifyContent {
     /** 主軸の開始端に寄せる。 */
     FLEX_START,
     /** 主軸の終了端に寄せる。 */

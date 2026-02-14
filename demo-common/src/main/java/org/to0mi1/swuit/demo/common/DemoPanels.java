@@ -55,12 +55,12 @@ public final class DemoPanels {
         cardPanel.add(RelativeLayoutDemos.relativeComplex(), "relativeComplex");
         cardPanel.add(AutoCompleteDemos.autoCompleteBasic(), "autoCompleteBasic");
         cardPanel.add(AutoCompleteDemos.autoCompleteObject(), "autoCompleteObject");
-        cardPanel.add(FlexBoxLayoutDemos.flexBasic(), "flexBasic");
-        cardPanel.add(FlexBoxLayoutDemos.flexWrap(), "flexWrap");
-        cardPanel.add(FlexBoxLayoutDemos.flexAlign(), "flexAlign");
-        cardPanel.add(GridBoxLayoutDemos.gridBasic(), "gridBasic");
-        cardPanel.add(GridBoxLayoutDemos.gridSpan(), "gridSpan");
-        cardPanel.add(GridBoxLayoutDemos.gridAlign(), "gridAlign");
+        cardPanel.add(CssFlexLayoutDemos.flexBasic(), "flexBasic");
+        cardPanel.add(CssFlexLayoutDemos.flexWrap(), "flexWrap");
+        cardPanel.add(CssFlexLayoutDemos.flexAlign(), "flexAlign");
+        cardPanel.add(CssGridLayoutDemos.gridBasic(), "gridBasic");
+        cardPanel.add(CssGridLayoutDemos.gridSpan(), "gridSpan");
+        cardPanel.add(CssGridLayoutDemos.gridAlign(), "gridAlign");
         cardPanel.add(VirtualScrollDemos.virtualScrollGridLayout(), "virtualScrollGrid");
         cardPanel.add(VirtualScrollDemos.virtualScrollLinearLayout(), "virtualScrollLinear");
         cardPanel.add(VirtualScrollDemos.virtualScrollFlexLayout(), "virtualScrollFlex");
@@ -88,13 +88,13 @@ public final class DemoPanels {
         autoComplete.add(new DefaultMutableTreeNode("autoCompleteObject"));
         root.add(autoComplete);
 
-        DefaultMutableTreeNode flex = new DefaultMutableTreeNode("FlexBoxLayout");
+        DefaultMutableTreeNode flex = new DefaultMutableTreeNode("CssFlexLayout");
         flex.add(new DefaultMutableTreeNode("flexBasic"));
         flex.add(new DefaultMutableTreeNode("flexWrap"));
         flex.add(new DefaultMutableTreeNode("flexAlign"));
         root.add(flex);
 
-        DefaultMutableTreeNode grid = new DefaultMutableTreeNode("GridBoxLayout");
+        DefaultMutableTreeNode grid = new DefaultMutableTreeNode("CssGridLayout");
         grid.add(new DefaultMutableTreeNode("gridBasic"));
         grid.add(new DefaultMutableTreeNode("gridSpan"));
         grid.add(new DefaultMutableTreeNode("gridAlign"));

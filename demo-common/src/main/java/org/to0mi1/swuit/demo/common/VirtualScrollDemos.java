@@ -10,9 +10,9 @@ import javax.swing.JPanel;
 
 import org.to0mi1.swuit.component.virtualscroll.VirtualScrollPane;
 import org.to0mi1.swuit.layout.Orientation;
-import org.to0mi1.swuit.layout.flex.FlexBoxLayout;
-import org.to0mi1.swuit.layout.flex.FlexDirection;
-import org.to0mi1.swuit.layout.flex.FlexWrap;
+import org.to0mi1.swuit.layout.flex.CssFlexLayout;
+import org.to0mi1.swuit.layout.flex.CssFlexDirection;
+import org.to0mi1.swuit.layout.flex.CssFlexWrap;
 import org.to0mi1.swuit.layout.linear.LinearLayout;
 
 /**
@@ -58,10 +58,10 @@ public final class VirtualScrollDemos {
         return sp;
     }
 
-    /** FlexBoxLayout(COLUMN, WRAP) で 1000 個のパネルを配置し VirtualScrollPane でラップ */
+    /** CssFlexLayout(COLUMN, WRAP) で 1000 個のパネルを配置し VirtualScrollPane でラップ */
     public static JComponent virtualScrollFlexLayout() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.COLUMN)
-                .setFlexWrap(FlexWrap.WRAP)
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.COLUMN)
+                .setCssFlexWrap(CssFlexWrap.WRAP)
                 .setMainAxisGap(2)
                 .setCrossAxisGap(2);
         JPanel panel = new JPanel(layout);

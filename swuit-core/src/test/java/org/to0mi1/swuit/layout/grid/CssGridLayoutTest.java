@@ -12,17 +12,17 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class GridBoxLayoutTest {
+class CssGridLayoutTest {
 
     // === ヘルパー ===
 
-    static JPanel createContainer(GridBoxLayout layout, int width, int height) {
+    static JPanel createContainer(CssGridLayout layout, int width, int height) {
         JPanel panel = new JPanel(layout);
         panel.setSize(width, height);
         return panel;
     }
 
-    static JPanel createContainerWithInsets(GridBoxLayout layout, int width, int height,
+    static JPanel createContainerWithInsets(CssGridLayout layout, int width, int height,
                                             int top, int left, int bottom, int right) {
         JPanel panel = new JPanel(layout);
         panel.setBorder(javax.swing.BorderFactory.createEmptyBorder(top, left, bottom, right));
@@ -45,15 +45,15 @@ class GridBoxLayoutTest {
 
     @Test
     void fixedColumns_basic() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(100), TrackSize.fixed(200))
-                .setRowTemplate(TrackSize.fr(1));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(100), CssTrackSize.fixed(200))
+                .setRowTemplate(CssTrackSize.fr(1));
         JPanel panel = createContainer(layout, 400, 100);
 
         Component a = fixedSize(80, 30);
         Component b = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0));
-        panel.add(b, new GridConstraints().column(1).row(0));
+        panel.add(a, new CssGridConstraints().column(0).row(0));
+        panel.add(b, new CssGridConstraints().column(1).row(0));
         panel.doLayout();
 
         // STRETCH (デフォルト): セル幅に引き伸ばされる
@@ -63,15 +63,15 @@ class GridBoxLayoutTest {
 
     @Test
     void fixedRows_basic() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(200))
-                .setRowTemplate(TrackSize.fixed(50), TrackSize.fixed(80));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(200))
+                .setRowTemplate(CssTrackSize.fixed(50), CssTrackSize.fixed(80));
         JPanel panel = createContainer(layout, 200, 200);
 
         Component a = fixedSize(80, 30);
         Component b = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0));
-        panel.add(b, new GridConstraints().column(0).row(1));
+        panel.add(a, new CssGridConstraints().column(0).row(0));
+        panel.add(b, new CssGridConstraints().column(0).row(1));
         panel.doLayout();
 
         assertEquals(new Rectangle(0, 0, 200, 50), boundsOf(a));
@@ -82,15 +82,15 @@ class GridBoxLayoutTest {
 
     @Test
     void frColumns_equalDistribution() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fr(1), TrackSize.fr(1))
-                .setRowTemplate(TrackSize.fr(1));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fr(1), CssTrackSize.fr(1))
+                .setRowTemplate(CssTrackSize.fr(1));
         JPanel panel = createContainer(layout, 400, 100);
 
         Component a = fixedSize(50, 30);
         Component b = fixedSize(50, 30);
-        panel.add(a, new GridConstraints().column(0).row(0));
-        panel.add(b, new GridConstraints().column(1).row(0));
+        panel.add(a, new CssGridConstraints().column(0).row(0));
+        panel.add(b, new CssGridConstraints().column(1).row(0));
         panel.doLayout();
 
         assertEquals(new Rectangle(0, 0, 200, 100), boundsOf(a));
@@ -99,15 +99,15 @@ class GridBoxLayoutTest {
 
     @Test
     void frColumns_weightedDistribution() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fr(1), TrackSize.fr(2))
-                .setRowTemplate(TrackSize.fr(1));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fr(1), CssTrackSize.fr(2))
+                .setRowTemplate(CssTrackSize.fr(1));
         JPanel panel = createContainer(layout, 300, 100);
 
         Component a = fixedSize(50, 30);
         Component b = fixedSize(50, 30);
-        panel.add(a, new GridConstraints().column(0).row(0));
-        panel.add(b, new GridConstraints().column(1).row(0));
+        panel.add(a, new CssGridConstraints().column(0).row(0));
+        panel.add(b, new CssGridConstraints().column(1).row(0));
         panel.doLayout();
 
         assertEquals(new Rectangle(0, 0, 100, 100), boundsOf(a));
@@ -117,17 +117,17 @@ class GridBoxLayoutTest {
     @Test
     void fixedAndFr_mixed() {
         // 100px 固定 + 残りを 1:2 で分配
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(100), TrackSize.fr(1), TrackSize.fr(2))
-                .setRowTemplate(TrackSize.fr(1));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(100), CssTrackSize.fr(1), CssTrackSize.fr(2))
+                .setRowTemplate(CssTrackSize.fr(1));
         JPanel panel = createContainer(layout, 400, 100);
 
         Component a = fixedSize(50, 30);
         Component b = fixedSize(50, 30);
         Component c = fixedSize(50, 30);
-        panel.add(a, new GridConstraints().column(0).row(0));
-        panel.add(b, new GridConstraints().column(1).row(0));
-        panel.add(c, new GridConstraints().column(2).row(0));
+        panel.add(a, new CssGridConstraints().column(0).row(0));
+        panel.add(b, new CssGridConstraints().column(1).row(0));
+        panel.add(c, new CssGridConstraints().column(2).row(0));
         panel.doLayout();
 
         assertEquals(new Rectangle(0, 0, 100, 100), boundsOf(a));
@@ -139,14 +139,14 @@ class GridBoxLayoutTest {
 
     @Test
     void autoColumns_fitToContent() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.auto(), TrackSize.auto());
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.auto(), CssTrackSize.auto());
         JPanel panel = createContainer(layout, 400, 100);
 
         Component a = fixedSize(80, 30);
         Component b = fixedSize(120, 30);
-        panel.add(a, new GridConstraints().column(0).row(0));
-        panel.add(b, new GridConstraints().column(1).row(0));
+        panel.add(a, new CssGridConstraints().column(0).row(0));
+        panel.add(b, new CssGridConstraints().column(1).row(0));
         panel.doLayout();
 
         assertEquals(80, boundsOf(a).width);
@@ -155,14 +155,14 @@ class GridBoxLayoutTest {
 
     @Test
     void autoAndFr_mixed() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.auto(), TrackSize.fr(1));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.auto(), CssTrackSize.fr(1));
         JPanel panel = createContainer(layout, 400, 100);
 
         Component a = fixedSize(100, 30);
         Component b = fixedSize(50, 30);
-        panel.add(a, new GridConstraints().column(0).row(0));
-        panel.add(b, new GridConstraints().column(1).row(0));
+        panel.add(a, new CssGridConstraints().column(0).row(0));
+        panel.add(b, new CssGridConstraints().column(1).row(0));
         panel.doLayout();
 
         assertEquals(100, boundsOf(a).width);
@@ -173,16 +173,16 @@ class GridBoxLayoutTest {
 
     @Test
     void columnGap() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fr(1), TrackSize.fr(1))
-                .setRowTemplate(TrackSize.fr(1))
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fr(1), CssTrackSize.fr(1))
+                .setRowTemplate(CssTrackSize.fr(1))
                 .setColumnGap(20);
         JPanel panel = createContainer(layout, 420, 100);
 
         Component a = fixedSize(50, 30);
         Component b = fixedSize(50, 30);
-        panel.add(a, new GridConstraints().column(0).row(0));
-        panel.add(b, new GridConstraints().column(1).row(0));
+        panel.add(a, new CssGridConstraints().column(0).row(0));
+        panel.add(b, new CssGridConstraints().column(1).row(0));
         panel.doLayout();
 
         // (420 - 20) / 2 = 200
@@ -192,16 +192,16 @@ class GridBoxLayoutTest {
 
     @Test
     void rowGap() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(200))
-                .setRowTemplate(TrackSize.fixed(40), TrackSize.fixed(40))
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(200))
+                .setRowTemplate(CssTrackSize.fixed(40), CssTrackSize.fixed(40))
                 .setRowGap(10);
         JPanel panel = createContainer(layout, 200, 200);
 
         Component a = fixedSize(80, 30);
         Component b = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0));
-        panel.add(b, new GridConstraints().column(0).row(1));
+        panel.add(a, new CssGridConstraints().column(0).row(0));
+        panel.add(b, new CssGridConstraints().column(0).row(1));
         panel.doLayout();
 
         assertEquals(new Rectangle(0, 0, 200, 40), boundsOf(a));
@@ -212,13 +212,13 @@ class GridBoxLayoutTest {
 
     @Test
     void containerInsets() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fr(1))
-                .setRowTemplate(TrackSize.fr(1));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fr(1))
+                .setRowTemplate(CssTrackSize.fr(1));
         JPanel panel = createContainerWithInsets(layout, 400, 200, 10, 20, 10, 20);
 
         Component a = fixedSize(50, 30);
-        panel.add(a, new GridConstraints().column(0).row(0));
+        panel.add(a, new CssGridConstraints().column(0).row(0));
         panel.doLayout();
 
         // 利用可能: 400-20-20=360, 200-10-10=180
@@ -229,12 +229,12 @@ class GridBoxLayoutTest {
 
     @Test
     void preferredSize_fixedTracks() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(100), TrackSize.fixed(200))
-                .setRowTemplate(TrackSize.fixed(50), TrackSize.fixed(60));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(100), CssTrackSize.fixed(200))
+                .setRowTemplate(CssTrackSize.fixed(50), CssTrackSize.fixed(60));
         JPanel panel = createContainer(layout, 400, 200);
 
-        panel.add(fixedSize(80, 30), new GridConstraints().column(0).row(0));
+        panel.add(fixedSize(80, 30), new CssGridConstraints().column(0).row(0));
 
         Dimension pref = layout.preferredLayoutSize(panel);
         assertEquals(300, pref.width);  // 100 + 200
@@ -243,13 +243,13 @@ class GridBoxLayoutTest {
 
     @Test
     void preferredSize_withGaps() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(100), TrackSize.fixed(100))
-                .setRowTemplate(TrackSize.fixed(50), TrackSize.fixed(50))
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(100), CssTrackSize.fixed(100))
+                .setRowTemplate(CssTrackSize.fixed(50), CssTrackSize.fixed(50))
                 .setColumnGap(10).setRowGap(5);
         JPanel panel = createContainer(layout, 400, 200);
 
-        panel.add(fixedSize(80, 30), new GridConstraints().column(0).row(0));
+        panel.add(fixedSize(80, 30), new CssGridConstraints().column(0).row(0));
 
         Dimension pref = layout.preferredLayoutSize(panel);
         assertEquals(210, pref.width);  // 100+100+10
@@ -258,12 +258,12 @@ class GridBoxLayoutTest {
 
     @Test
     void preferredSize_withInsets() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(100))
-                .setRowTemplate(TrackSize.fixed(50));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(100))
+                .setRowTemplate(CssTrackSize.fixed(50));
         JPanel panel = createContainerWithInsets(layout, 400, 200, 10, 20, 10, 20);
 
-        panel.add(fixedSize(80, 30), new GridConstraints().column(0).row(0));
+        panel.add(fixedSize(80, 30), new CssGridConstraints().column(0).row(0));
 
         Dimension pref = layout.preferredLayoutSize(panel);
         assertEquals(140, pref.width);  // 100 + 20 + 20
@@ -272,12 +272,12 @@ class GridBoxLayoutTest {
 
     @Test
     void preferredSize_autoTracks() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.auto(), TrackSize.auto());
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.auto(), CssTrackSize.auto());
         JPanel panel = createContainer(layout, 400, 200);
 
-        panel.add(fixedSize(80, 30), new GridConstraints().column(0).row(0));
-        panel.add(fixedSize(120, 50), new GridConstraints().column(1).row(0));
+        panel.add(fixedSize(80, 30), new CssGridConstraints().column(0).row(0));
+        panel.add(fixedSize(120, 50), new CssGridConstraints().column(1).row(0));
 
         Dimension pref = layout.preferredLayoutSize(panel);
         assertEquals(200, pref.width);  // 80 + 120
@@ -288,12 +288,12 @@ class GridBoxLayoutTest {
 
     @Test
     void preferredSize_frTracks_fallsBackToContent() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fr(1), TrackSize.fr(2));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fr(1), CssTrackSize.fr(2));
         JPanel panel = createContainer(layout, 400, 200);
 
-        panel.add(fixedSize(80, 30), new GridConstraints().column(0).row(0));
-        panel.add(fixedSize(120, 50), new GridConstraints().column(1).row(0));
+        panel.add(fixedSize(80, 30), new CssGridConstraints().column(0).row(0));
+        panel.add(fixedSize(120, 50), new CssGridConstraints().column(1).row(0));
 
         Dimension pref = layout.preferredLayoutSize(panel);
         assertEquals(200, pref.width);  // fr → auto: 80 + 120
@@ -304,12 +304,12 @@ class GridBoxLayoutTest {
 
     @Test
     void minimumSize_delegatesToPreferred() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(100), TrackSize.fixed(200))
-                .setRowTemplate(TrackSize.fixed(50));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(100), CssTrackSize.fixed(200))
+                .setRowTemplate(CssTrackSize.fixed(50));
         JPanel panel = createContainer(layout, 400, 200);
 
-        panel.add(fixedSize(80, 30), new GridConstraints().column(0).row(0));
+        panel.add(fixedSize(80, 30), new CssGridConstraints().column(0).row(0));
 
         Dimension pref = layout.preferredLayoutSize(panel);
         Dimension min = layout.minimumLayoutSize(panel);
@@ -320,15 +320,15 @@ class GridBoxLayoutTest {
 
     @Test
     void removeLayoutComponent_componentNoLongerLaidOut() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(100), TrackSize.fixed(100))
-                .setRowTemplate(TrackSize.fr(1));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(100), CssTrackSize.fixed(100))
+                .setRowTemplate(CssTrackSize.fr(1));
         JPanel panel = createContainer(layout, 200, 100);
 
         Component a = fixedSize(80, 30);
         Component b = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0));
-        panel.add(b, new GridConstraints().column(1).row(0));
+        panel.add(a, new CssGridConstraints().column(0).row(0));
+        panel.add(b, new CssGridConstraints().column(1).row(0));
         panel.doLayout();
 
         // b を削除
@@ -343,7 +343,7 @@ class GridBoxLayoutTest {
 
     @Test
     void addLayoutComponent_rejectsInvalidConstraints() {
-        GridBoxLayout layout = new GridBoxLayout();
+        CssGridLayout layout = new CssGridLayout();
         JPanel panel = new JPanel(layout);
 
         assertThrows(IllegalArgumentException.class, () ->
@@ -352,12 +352,12 @@ class GridBoxLayoutTest {
 
     @Test
     void addLayoutComponent_acceptsNull() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(100));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(100));
         JPanel panel = createContainer(layout, 100, 100);
 
         Component a = fixedSize(80, 30);
-        panel.add(a); // constraints = null → デフォルト GridConstraints
+        panel.add(a); // constraints = null → デフォルト CssGridConstraints
         panel.doLayout();
 
         // エラーなくレイアウトされる
@@ -368,9 +368,9 @@ class GridBoxLayoutTest {
 
     @Test
     void invisibleComponents_skipped() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(100), TrackSize.fixed(100))
-                .setRowTemplate(TrackSize.fr(1));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(100), CssTrackSize.fixed(100))
+                .setRowTemplate(CssTrackSize.fr(1));
         JPanel panel = createContainer(layout, 200, 100);
 
         Component a = fixedSize(80, 30);
@@ -378,9 +378,9 @@ class GridBoxLayoutTest {
         invisible.setVisible(false);
         Component b = fixedSize(80, 30);
 
-        panel.add(a, new GridConstraints().column(0).row(0));
-        panel.add(invisible, new GridConstraints().column(1).row(0));
-        panel.add(b, new GridConstraints().column(1).row(0));
+        panel.add(a, new CssGridConstraints().column(0).row(0));
+        panel.add(invisible, new CssGridConstraints().column(1).row(0));
+        panel.add(b, new CssGridConstraints().column(1).row(0));
         panel.doLayout();
 
         assertEquals(new Rectangle(0, 0, 100, 100), boundsOf(a));
@@ -392,8 +392,8 @@ class GridBoxLayoutTest {
 
     @Test
     void emptyContainer_doLayout_noError() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(100));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(100));
         JPanel panel = createContainer(layout, 400, 200);
 
         panel.doLayout(); // 例外なし
@@ -401,8 +401,8 @@ class GridBoxLayoutTest {
 
     @Test
     void emptyContainer_preferredSize_returnsInsets() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(100));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(100));
         JPanel panel = createContainerWithInsets(layout, 400, 200, 10, 20, 10, 20);
 
         Dimension pref = layout.preferredLayoutSize(panel);
@@ -414,9 +414,9 @@ class GridBoxLayoutTest {
 
     @Test
     void columnGap_and_rowGap_combined() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(100), TrackSize.fixed(100))
-                .setRowTemplate(TrackSize.fixed(50), TrackSize.fixed(50))
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(100), CssTrackSize.fixed(100))
+                .setRowTemplate(CssTrackSize.fixed(50), CssTrackSize.fixed(50))
                 .setColumnGap(10).setRowGap(20);
         JPanel panel = createContainer(layout, 210, 120);
 
@@ -424,10 +424,10 @@ class GridBoxLayoutTest {
         Component b = fixedSize(80, 30);
         Component c = fixedSize(80, 30);
         Component d = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0));
-        panel.add(b, new GridConstraints().column(1).row(0));
-        panel.add(c, new GridConstraints().column(0).row(1));
-        panel.add(d, new GridConstraints().column(1).row(1));
+        panel.add(a, new CssGridConstraints().column(0).row(0));
+        panel.add(b, new CssGridConstraints().column(1).row(0));
+        panel.add(c, new CssGridConstraints().column(0).row(1));
+        panel.add(d, new CssGridConstraints().column(1).row(1));
         panel.doLayout();
 
         assertEquals(new Rectangle(0, 0, 100, 50), boundsOf(a));
@@ -439,13 +439,13 @@ class GridBoxLayoutTest {
     // === margin + auto トラック ===
 
     @Test
-    void margin_affectsAutoTrackSize() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.auto());
+    void margin_affectsAutoCssTrackSize() {
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.auto());
         JPanel panel = createContainer(layout, 400, 100);
 
         Component a = fixedSize(80, 30);
-        panel.add(a, new GridConstraints().column(0).row(0).margin(0, 10, 0, 10));
+        panel.add(a, new CssGridConstraints().column(0).row(0).margin(0, 10, 0, 10));
         panel.doLayout();
 
         // auto トラックはコンテンツ + margin を考慮: 80 + 10 + 10 = 100
@@ -458,15 +458,15 @@ class GridBoxLayoutTest {
 
     @Test
     void sameCell_overlappingItems() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(200))
-                .setRowTemplate(TrackSize.fixed(100));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(200))
+                .setRowTemplate(CssTrackSize.fixed(100));
         JPanel panel = createContainer(layout, 200, 100);
 
         Component a = fixedSize(80, 30);
         Component b = fixedSize(60, 40);
-        panel.add(a, new GridConstraints().column(0).row(0));
-        panel.add(b, new GridConstraints().column(0).row(0));
+        panel.add(a, new CssGridConstraints().column(0).row(0));
+        panel.add(b, new CssGridConstraints().column(0).row(0));
         panel.doLayout();
 
         // 両方とも同じセルにレイアウトされる (重なる)
@@ -474,26 +474,26 @@ class GridBoxLayoutTest {
         assertEquals(new Rectangle(0, 0, 200, 100), boundsOf(b));
     }
 
-    // === TrackSize バリデーション ===
+    // === CssTrackSize バリデーション ===
 
     @Test
     void trackSize_fixed_rejectsNegative() {
-        assertThrows(IllegalArgumentException.class, () -> TrackSize.fixed(-1));
+        assertThrows(IllegalArgumentException.class, () -> CssTrackSize.fixed(-1));
     }
 
     @Test
     void trackSize_fr_rejectsZero() {
-        assertThrows(IllegalArgumentException.class, () -> TrackSize.fr(0));
+        assertThrows(IllegalArgumentException.class, () -> CssTrackSize.fr(0));
     }
 
     @Test
     void trackSize_fr_rejectsNegative() {
-        assertThrows(IllegalArgumentException.class, () -> TrackSize.fr(-1));
+        assertThrows(IllegalArgumentException.class, () -> CssTrackSize.fr(-1));
     }
 
     @Test
     void trackSize_fixed_acceptsZero() {
-        TrackSize ts = TrackSize.fixed(0);
+        CssTrackSize ts = CssTrackSize.fixed(0);
         assertNotNull(ts);
     }
 }

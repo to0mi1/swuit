@@ -15,77 +15,77 @@ import java.util.Map;
  * CSS Flexbox に相当するレイアウトマネージャー。
  * <p>
  * 折り返し (wrap) 付きの柔軟な配置を提供する。
- * {@link FlexConstraints} でアイテム単位の制約を指定できる。
+ * {@link CssFlexConstraints} でアイテム単位の制約を指定できる。
  *
  * <pre>{@code
- * JPanel panel = new JPanel(new FlexBoxLayout(FlexDirection.ROW)
- *     .setFlexWrap(FlexWrap.WRAP)
- *     .setJustifyContent(JustifyContent.SPACE_BETWEEN));
- * panel.add(child, new FlexConstraints().flexGrow(1));
+ * JPanel panel = new JPanel(new CssFlexLayout(CssFlexDirection.ROW)
+ *     .setCssFlexWrap(CssFlexWrap.WRAP)
+ *     .setCssJustifyContent(CssJustifyContent.SPACE_BETWEEN));
+ * panel.add(child, new CssFlexConstraints().flexGrow(1));
  * }</pre>
  */
-public class FlexBoxLayout implements LayoutManager2 {
+public class CssFlexLayout implements LayoutManager2 {
 
-    private FlexDirection flexDirection = FlexDirection.ROW;
-    private FlexWrap flexWrap = FlexWrap.NOWRAP;
-    private JustifyContent justifyContent = JustifyContent.FLEX_START;
-    private AlignItems alignItems = AlignItems.STRETCH;
-    private AlignContent alignContent = AlignContent.STRETCH;
+    private CssFlexDirection flexDirection = CssFlexDirection.ROW;
+    private CssFlexWrap flexWrap = CssFlexWrap.NOWRAP;
+    private CssJustifyContent justifyContent = CssJustifyContent.FLEX_START;
+    private CssAlignItems alignItems = CssAlignItems.STRETCH;
+    private CssAlignContent alignContent = CssAlignContent.STRETCH;
     private int mainAxisGap = 0;
     private int crossAxisGap = 0;
 
-    private final Map<Component, FlexConstraints> constraintsMap = new LinkedHashMap<>();
+    private final Map<Component, CssFlexConstraints> constraintsMap = new LinkedHashMap<>();
 
-    public FlexBoxLayout() {
+    public CssFlexLayout() {
     }
 
-    public FlexBoxLayout(FlexDirection flexDirection) {
+    public CssFlexLayout(CssFlexDirection flexDirection) {
         this.flexDirection = flexDirection;
     }
 
     // --- プロパティ (fluent setters) ---
 
-    public FlexDirection getFlexDirection() {
+    public CssFlexDirection getCssFlexDirection() {
         return flexDirection;
     }
 
-    public FlexBoxLayout setFlexDirection(FlexDirection flexDirection) {
+    public CssFlexLayout setCssFlexDirection(CssFlexDirection flexDirection) {
         this.flexDirection = flexDirection;
         return this;
     }
 
-    public FlexWrap getFlexWrap() {
+    public CssFlexWrap getCssFlexWrap() {
         return flexWrap;
     }
 
-    public FlexBoxLayout setFlexWrap(FlexWrap flexWrap) {
+    public CssFlexLayout setCssFlexWrap(CssFlexWrap flexWrap) {
         this.flexWrap = flexWrap;
         return this;
     }
 
-    public JustifyContent getJustifyContent() {
+    public CssJustifyContent getCssJustifyContent() {
         return justifyContent;
     }
 
-    public FlexBoxLayout setJustifyContent(JustifyContent justifyContent) {
+    public CssFlexLayout setCssJustifyContent(CssJustifyContent justifyContent) {
         this.justifyContent = justifyContent;
         return this;
     }
 
-    public AlignItems getAlignItems() {
+    public CssAlignItems getCssAlignItems() {
         return alignItems;
     }
 
-    public FlexBoxLayout setAlignItems(AlignItems alignItems) {
+    public CssFlexLayout setCssAlignItems(CssAlignItems alignItems) {
         this.alignItems = alignItems;
         return this;
     }
 
-    public AlignContent getAlignContent() {
+    public CssAlignContent getCssAlignContent() {
         return alignContent;
     }
 
-    public FlexBoxLayout setAlignContent(AlignContent alignContent) {
+    public CssFlexLayout setCssAlignContent(CssAlignContent alignContent) {
         this.alignContent = alignContent;
         return this;
     }
@@ -94,7 +94,7 @@ public class FlexBoxLayout implements LayoutManager2 {
         return mainAxisGap;
     }
 
-    public FlexBoxLayout setMainAxisGap(int mainAxisGap) {
+    public CssFlexLayout setMainAxisGap(int mainAxisGap) {
         this.mainAxisGap = mainAxisGap;
         return this;
     }
@@ -103,7 +103,7 @@ public class FlexBoxLayout implements LayoutManager2 {
         return crossAxisGap;
     }
 
-    public FlexBoxLayout setCrossAxisGap(int crossAxisGap) {
+    public CssFlexLayout setCrossAxisGap(int crossAxisGap) {
         this.crossAxisGap = crossAxisGap;
         return this;
     }
@@ -113,12 +113,12 @@ public class FlexBoxLayout implements LayoutManager2 {
     @Override
     public void addLayoutComponent(Component comp, Object constraints) {
         if (constraints == null) {
-            constraintsMap.put(comp, new FlexConstraints());
-        } else if (constraints instanceof FlexConstraints fc) {
+            constraintsMap.put(comp, new CssFlexConstraints());
+        } else if (constraints instanceof CssFlexConstraints fc) {
             constraintsMap.put(comp, fc.clone());
         } else {
             throw new IllegalArgumentException(
-                    "constraints must be a FlexConstraints instance: " + constraints.getClass().getName());
+                    "constraints must be a CssFlexConstraints instance: " + constraints.getClass().getName());
         }
     }
 
@@ -177,7 +177,7 @@ public class FlexBoxLayout implements LayoutManager2 {
                 Component child = parent.getComponent(i);
                 if (!child.isVisible()) continue;
 
-                FlexConstraints fc = getConstraints(child);
+                CssFlexConstraints fc = getConstraints(child);
                 Dimension d = minimum ? child.getMinimumSize() : child.getPreferredSize();
                 Insets m = fc.getMargin();
 
@@ -224,60 +224,60 @@ public class FlexBoxLayout implements LayoutManager2 {
             int availableCross = horizontal ? availableHeight : availableWidth;
 
             // Phase 1: アイテム収集 + order ソート
-            List<FlexItem> items = collectItems(parent);
+            List<CssFlexItem> items = collectItems(parent);
             if (items.isEmpty()) return;
 
             // Phase 2: flex-basis 計算
             computeFlexBasis(items, horizontal, availableMain);
 
             // Phase 3: ライン形成
-            List<FlexLine> lines = formLines(items, horizontal, availableMain);
+            List<CssFlexLine> lines = formLines(items, horizontal, availableMain);
 
             // Phase 4-5: flexGrow/flexShrink + min/max クランプ
-            for (FlexLine line : lines) {
+            for (CssFlexLine line : lines) {
                 resolveFlexibleLengths(line, horizontal, availableMain);
             }
 
             // Phase 6: justifyContent 適用
-            for (FlexLine line : lines) {
-                applyJustifyContent(line, horizontal, availableMain);
+            for (CssFlexLine line : lines) {
+                applyCssJustifyContent(line, horizontal, availableMain);
             }
 
             // Phase 7: ライン副軸サイズ + alignContent 適用
             computeLineCrossSizes(lines, horizontal);
-            applyAlignContent(lines, availableCross);
+            applyCssAlignContent(lines, availableCross);
 
             // Phase 8: alignItems/alignSelf 適用
-            for (FlexLine line : lines) {
-                applyAlignItems(line, horizontal);
+            for (CssFlexLine line : lines) {
+                applyCssAlignItems(line, horizontal);
             }
 
             // Phase 9: 座標変換 + 配置
             placeBounds(lines, horizontal, insets, flexDirection.isReverse(),
-                    flexWrap == FlexWrap.WRAP_REVERSE, availableWidth, availableHeight);
+                    flexWrap == CssFlexWrap.WRAP_REVERSE, availableWidth, availableHeight);
         }
     }
 
     // --- Phase 1: アイテム収集 ---
 
-    private List<FlexItem> collectItems(Container parent) {
-        List<FlexItem> items = new ArrayList<>();
+    private List<CssFlexItem> collectItems(Container parent) {
+        List<CssFlexItem> items = new ArrayList<>();
         int addOrder = 0;
         for (int i = 0; i < parent.getComponentCount(); i++) {
             Component child = parent.getComponent(i);
             if (!child.isVisible()) continue;
-            FlexConstraints fc = getConstraints(child);
-            items.add(new FlexItem(child, fc, addOrder++));
+            CssFlexConstraints fc = getConstraints(child);
+            items.add(new CssFlexItem(child, fc, addOrder++));
         }
-        items.sort(Comparator.comparingInt((FlexItem fi) -> fi.constraints.getOrder())
+        items.sort(Comparator.comparingInt((CssFlexItem fi) -> fi.constraints.getOrder())
                 .thenComparingInt(fi -> fi.addOrder));
         return items;
     }
 
     // --- Phase 2: flex-basis ---
 
-    private void computeFlexBasis(List<FlexItem> items, boolean horizontal, int availableMain) {
-        for (FlexItem item : items) {
+    private void computeFlexBasis(List<CssFlexItem> items, boolean horizontal, int availableMain) {
+        for (CssFlexItem item : items) {
             float basisPercent = item.constraints.getFlexBasisPercent();
             if (basisPercent >= 0) {
                 item.flexBasis = Math.round(availableMain * basisPercent / 100f);
@@ -290,23 +290,23 @@ public class FlexBoxLayout implements LayoutManager2 {
 
     // --- Phase 3: ライン形成 ---
 
-    private List<FlexLine> formLines(List<FlexItem> items, boolean horizontal, int availableMain) {
-        List<FlexLine> lines = new ArrayList<>();
-        FlexLine currentLine = new FlexLine();
+    private List<CssFlexLine> formLines(List<CssFlexItem> items, boolean horizontal, int availableMain) {
+        List<CssFlexLine> lines = new ArrayList<>();
+        CssFlexLine currentLine = new CssFlexLine();
         int lineMainUsed = 0;
 
         for (int i = 0; i < items.size(); i++) {
-            FlexItem item = items.get(i);
+            CssFlexItem item = items.get(i);
             int itemMainWithMargin = item.flexBasis + item.mainMargin(horizontal);
             if (!currentLine.items.isEmpty()) {
                 itemMainWithMargin += mainAxisGap;
             }
 
-            if (flexWrap != FlexWrap.NOWRAP && !currentLine.items.isEmpty()
+            if (flexWrap != CssFlexWrap.NOWRAP && !currentLine.items.isEmpty()
                     && lineMainUsed + itemMainWithMargin > availableMain) {
                 currentLine.mainSize = lineMainUsed;
                 lines.add(currentLine);
-                currentLine = new FlexLine();
+                currentLine = new CssFlexLine();
                 lineMainUsed = 0;
                 itemMainWithMargin = item.flexBasis + item.mainMargin(horizontal);
             }
@@ -321,26 +321,26 @@ public class FlexBoxLayout implements LayoutManager2 {
 
     // --- Phase 4-5: flexGrow/flexShrink + min/max (CSS §9.7) ---
 
-    private void resolveFlexibleLengths(FlexLine line, boolean horizontal, int availableMain) {
-        List<FlexItem> items = line.items;
+    private void resolveFlexibleLengths(CssFlexLine line, boolean horizontal, int availableMain) {
+        List<CssFlexItem> items = line.items;
         int gapTotal = mainAxisGap * (items.size() - 1);
 
         // 初期化: mainSize = flexBasis
-        for (FlexItem item : items) {
+        for (CssFlexItem item : items) {
             item.mainSize = item.flexBasis;
             item.frozen = false;
         }
 
         // 初期余剰/不足を計算
         int usedMain = gapTotal;
-        for (FlexItem item : items) {
+        for (CssFlexItem item : items) {
             usedMain += item.flexBasis + item.mainMargin(horizontal);
         }
         int initialFreeSpace = availableMain - usedMain;
         boolean growing = initialFreeSpace >= 0;
 
         // flex factor が 0 のアイテムをフリーズ
-        for (FlexItem item : items) {
+        for (CssFlexItem item : items) {
             float flex = growing ? item.constraints.getFlexGrow() : item.constraints.getFlexShrink();
             if (flex <= 0) {
                 item.frozen = true;
@@ -351,14 +351,14 @@ public class FlexBoxLayout implements LayoutManager2 {
         for (;;) {
             // 未フリーズのアイテムがあるか
             boolean hasUnfrozen = false;
-            for (FlexItem item : items) {
+            for (CssFlexItem item : items) {
                 if (!item.frozen) { hasUnfrozen = true; break; }
             }
             if (!hasUnfrozen) break;
 
             // 残余スペース計算（フリーズ済みは mainSize、未フリーズは flexBasis）
             usedMain = gapTotal;
-            for (FlexItem item : items) {
+            for (CssFlexItem item : items) {
                 usedMain += (item.frozen ? item.mainSize : item.flexBasis)
                         + item.mainMargin(horizontal);
             }
@@ -366,7 +366,7 @@ public class FlexBoxLayout implements LayoutManager2 {
 
             // 合計 flex factor
             float totalFlex = 0;
-            for (FlexItem item : items) {
+            for (CssFlexItem item : items) {
                 if (!item.frozen) {
                     totalFlex += growing
                             ? item.constraints.getFlexGrow()
@@ -380,7 +380,7 @@ public class FlexBoxLayout implements LayoutManager2 {
             int remainingSpace = freeSpace;
             boolean anyViolation = false;
 
-            for (FlexItem item : items) {
+            for (CssFlexItem item : items) {
                 if (item.frozen) continue;
 
                 float flex = growing
@@ -422,13 +422,13 @@ public class FlexBoxLayout implements LayoutManager2 {
 
     // --- Phase 6: justifyContent ---
 
-    private void applyJustifyContent(FlexLine line, boolean horizontal, int availableMain) {
-        List<FlexItem> items = line.items;
+    private void applyCssJustifyContent(CssFlexLine line, boolean horizontal, int availableMain) {
+        List<CssFlexItem> items = line.items;
         int count = items.size();
         int gapTotal = mainAxisGap * (count - 1);
 
         int usedMain = gapTotal;
-        for (FlexItem item : items) {
+        for (CssFlexItem item : items) {
             usedMain += item.mainSize + item.mainMargin(horizontal);
         }
         int freeSpace = Math.max(0, availableMain - usedMain);
@@ -469,7 +469,7 @@ public class FlexBoxLayout implements LayoutManager2 {
         // 主軸位置を設定
         int pos = offset;
         for (int i = 0; i < count; i++) {
-            FlexItem item = items.get(i);
+            CssFlexItem item = items.get(i);
             item.mainPos = pos + item.mainMarginStart(horizontal);
             pos += item.mainMarginStart(horizontal) + item.mainSize
                     + (item.margin().right + item.margin().left - item.mainMarginStart(horizontal) * 2
@@ -485,10 +485,10 @@ public class FlexBoxLayout implements LayoutManager2 {
 
     // --- Phase 7: ライン副軸サイズ ---
 
-    private void computeLineCrossSizes(List<FlexLine> lines, boolean horizontal) {
-        for (FlexLine line : lines) {
+    private void computeLineCrossSizes(List<CssFlexLine> lines, boolean horizontal) {
+        for (CssFlexLine line : lines) {
             int maxCross = 0;
-            for (FlexItem item : line.items) {
+            for (CssFlexItem item : line.items) {
                 Dimension pref = item.component.getPreferredSize();
                 int itemCross = horizontal ? pref.height : pref.width;
                 itemCross += item.crossMargin(horizontal);
@@ -500,10 +500,10 @@ public class FlexBoxLayout implements LayoutManager2 {
 
     // --- Phase 7b: alignContent ---
 
-    private void applyAlignContent(List<FlexLine> lines, int availableCross) {
+    private void applyCssAlignContent(List<CssFlexLine> lines, int availableCross) {
         int lineCount = lines.size();
         int totalCross = 0;
-        for (FlexLine line : lines) {
+        for (CssFlexLine line : lines) {
             totalCross += line.crossSize;
         }
         if (lineCount > 1) {
@@ -539,7 +539,7 @@ public class FlexBoxLayout implements LayoutManager2 {
             case STRETCH:
                 if (lineCount > 0) {
                     int extra = freeSpace / lineCount;
-                    for (FlexLine line : lines) {
+                    for (CssFlexLine line : lines) {
                         line.crossSize += extra;
                     }
                 }
@@ -558,14 +558,14 @@ public class FlexBoxLayout implements LayoutManager2 {
 
     // --- Phase 8: alignItems / alignSelf ---
 
-    private void applyAlignItems(FlexLine line, boolean horizontal) {
-        for (FlexItem item : line.items) {
-            AlignSelf self = item.constraints.getAlignSelf();
-            AlignItems effective;
-            if (self == AlignSelf.AUTO) {
+    private void applyCssAlignItems(CssFlexLine line, boolean horizontal) {
+        for (CssFlexItem item : line.items) {
+            CssAlignSelf self = item.constraints.getCssAlignSelf();
+            CssAlignItems effective;
+            if (self == CssAlignSelf.AUTO) {
                 effective = alignItems;
             } else {
-                effective = AlignItems.valueOf(self.name());
+                effective = CssAlignItems.valueOf(self.name());
             }
 
             int lineCross = line.crossSize;
@@ -603,14 +603,14 @@ public class FlexBoxLayout implements LayoutManager2 {
 
     // --- Phase 9: 座標変換 + 配置 ---
 
-    private void placeBounds(List<FlexLine> lines, boolean horizontal,
+    private void placeBounds(List<CssFlexLine> lines, boolean horizontal,
                              Insets insets, boolean mainReverse, boolean crossReverse,
                              int availableWidth, int availableHeight) {
         int availableMain = horizontal ? availableWidth : availableHeight;
         int availableCross = horizontal ? availableHeight : availableWidth;
 
-        for (FlexLine line : lines) {
-            for (FlexItem item : line.items) {
+        for (CssFlexLine line : lines) {
+            for (CssFlexItem item : line.items) {
                 int mainP = item.mainPos;
                 int crossP = item.crossPos;
                 int mainS = item.mainSize;
@@ -644,8 +644,8 @@ public class FlexBoxLayout implements LayoutManager2 {
 
     // --- ユーティリティ ---
 
-    private FlexConstraints getConstraints(Component comp) {
-        FlexConstraints fc = constraintsMap.get(comp);
-        return fc != null ? fc : new FlexConstraints();
+    private CssFlexConstraints getConstraints(Component comp) {
+        CssFlexConstraints fc = constraintsMap.get(comp);
+        return fc != null ? fc : new CssFlexConstraints();
     }
 }

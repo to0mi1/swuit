@@ -6,25 +6,25 @@ import java.awt.Rectangle;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.to0mi1.swuit.layout.grid.GridBoxLayoutTest.*;
+import static org.to0mi1.swuit.layout.grid.CssGridLayoutTest.*;
 
-class GridBoxLayoutSpanTest {
+class CssGridLayoutSpanTest {
 
     // === columnSpan ===
 
     @Test
     void columnSpan_basic() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(100), TrackSize.fixed(100), TrackSize.fixed(100))
-                .setRowTemplate(TrackSize.fixed(50), TrackSize.fixed(50));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(100), CssTrackSize.fixed(100), CssTrackSize.fixed(100))
+                .setRowTemplate(CssTrackSize.fixed(50), CssTrackSize.fixed(50));
         javax.swing.JPanel panel = createContainer(layout, 300, 100);
 
         Component header = fixedSize(200, 30);
         Component a = fixedSize(80, 30);
         Component b = fixedSize(80, 30);
-        panel.add(header, new GridConstraints().column(0).row(0).columnSpan(3));
-        panel.add(a, new GridConstraints().column(0).row(1));
-        panel.add(b, new GridConstraints().column(1).row(1));
+        panel.add(header, new CssGridConstraints().column(0).row(0).columnSpan(3));
+        panel.add(a, new CssGridConstraints().column(0).row(1));
+        panel.add(b, new CssGridConstraints().column(1).row(1));
         panel.doLayout();
 
         assertEquals(new Rectangle(0, 0, 300, 50), boundsOf(header));
@@ -32,14 +32,14 @@ class GridBoxLayoutSpanTest {
 
     @Test
     void columnSpan_withGap() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(100), TrackSize.fixed(100), TrackSize.fixed(100))
-                .setRowTemplate(TrackSize.fr(1))
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(100), CssTrackSize.fixed(100), CssTrackSize.fixed(100))
+                .setRowTemplate(CssTrackSize.fr(1))
                 .setColumnGap(10);
         javax.swing.JPanel panel = createContainer(layout, 320, 100);
 
         Component header = fixedSize(200, 30);
-        panel.add(header, new GridConstraints().column(0).row(0).columnSpan(3));
+        panel.add(header, new CssGridConstraints().column(0).row(0).columnSpan(3));
         panel.doLayout();
 
         // 100 + 10 + 100 + 10 + 100 = 320
@@ -50,17 +50,17 @@ class GridBoxLayoutSpanTest {
 
     @Test
     void rowSpan_basic() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(100), TrackSize.fixed(200))
-                .setRowTemplate(TrackSize.fixed(50), TrackSize.fixed(50));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(100), CssTrackSize.fixed(200))
+                .setRowTemplate(CssTrackSize.fixed(50), CssTrackSize.fixed(50));
         javax.swing.JPanel panel = createContainer(layout, 300, 100);
 
         Component sidebar = fixedSize(80, 80);
         Component a = fixedSize(80, 30);
         Component b = fixedSize(80, 30);
-        panel.add(sidebar, new GridConstraints().column(0).row(0).rowSpan(2));
-        panel.add(a, new GridConstraints().column(1).row(0));
-        panel.add(b, new GridConstraints().column(1).row(1));
+        panel.add(sidebar, new CssGridConstraints().column(0).row(0).rowSpan(2));
+        panel.add(a, new CssGridConstraints().column(1).row(0));
+        panel.add(b, new CssGridConstraints().column(1).row(1));
         panel.doLayout();
 
         assertEquals(new Rectangle(0, 0, 100, 100), boundsOf(sidebar));
@@ -68,14 +68,14 @@ class GridBoxLayoutSpanTest {
 
     @Test
     void rowSpan_withGap() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(100), TrackSize.fixed(200))
-                .setRowTemplate(TrackSize.fixed(50), TrackSize.fixed(50))
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(100), CssTrackSize.fixed(200))
+                .setRowTemplate(CssTrackSize.fixed(50), CssTrackSize.fixed(50))
                 .setRowGap(10);
         javax.swing.JPanel panel = createContainer(layout, 300, 200);
 
         Component sidebar = fixedSize(80, 80);
-        panel.add(sidebar, new GridConstraints().column(0).row(0).rowSpan(2));
+        panel.add(sidebar, new CssGridConstraints().column(0).row(0).rowSpan(2));
         panel.doLayout();
 
         // 50 + 10 + 50 = 110
@@ -86,8 +86,8 @@ class GridBoxLayoutSpanTest {
 
     @Test
     void autoPlacement_sequential() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(100), TrackSize.fixed(100));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(100), CssTrackSize.fixed(100));
         javax.swing.JPanel panel = createContainer(layout, 200, 200);
 
         Component a = fixedSize(80, 30);
@@ -110,8 +110,8 @@ class GridBoxLayoutSpanTest {
 
     @Test
     void autoPlacement_skipsOccupied() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(100), TrackSize.fixed(100), TrackSize.fixed(100));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(100), CssTrackSize.fixed(100), CssTrackSize.fixed(100));
         javax.swing.JPanel panel = createContainer(layout, 300, 200);
 
         Component positioned = fixedSize(80, 30);
@@ -120,7 +120,7 @@ class GridBoxLayoutSpanTest {
         Component auto3 = fixedSize(80, 30);
 
         // (1,0) に明示的配置
-        panel.add(positioned, new GridConstraints().column(1).row(0));
+        panel.add(positioned, new CssGridConstraints().column(1).row(0));
         panel.add(auto1);
         panel.add(auto2);
         panel.add(auto3);
@@ -141,15 +141,15 @@ class GridBoxLayoutSpanTest {
 
     @Test
     void implicitRows_addedWhenOverflow() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(100))
-                .setRowTemplate(TrackSize.fixed(50));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(100))
+                .setRowTemplate(CssTrackSize.fixed(50));
         javax.swing.JPanel panel = createContainer(layout, 100, 200);
 
         Component a = fixedSize(80, 30);
         Component b = fixedSize(80, 40);
-        panel.add(a, new GridConstraints().column(0).row(0));
-        panel.add(b, new GridConstraints().column(0).row(1)); // 暗黙的行
+        panel.add(a, new CssGridConstraints().column(0).row(0));
+        panel.add(b, new CssGridConstraints().column(0).row(1)); // 暗黙的行
         panel.doLayout();
 
         assertEquals(new Rectangle(0, 0, 100, 50), boundsOf(a));
@@ -162,8 +162,8 @@ class GridBoxLayoutSpanTest {
 
     @Test
     void autoPlacement_withSpan() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(100), TrackSize.fixed(100), TrackSize.fixed(100));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(100), CssTrackSize.fixed(100), CssTrackSize.fixed(100));
         javax.swing.JPanel panel = createContainer(layout, 300, 200);
 
         Component wide = fixedSize(180, 30);
@@ -171,7 +171,7 @@ class GridBoxLayoutSpanTest {
         Component b = fixedSize(80, 30);
 
         // wide は columnSpan=2、位置未指定
-        panel.add(wide, new GridConstraints().columnSpan(2));
+        panel.add(wide, new CssGridConstraints().columnSpan(2));
         panel.add(a);
         panel.add(b);
         panel.doLayout();
@@ -192,18 +192,18 @@ class GridBoxLayoutSpanTest {
 
     @Test
     void columnSpan_and_rowSpan_combined() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(100), TrackSize.fixed(100), TrackSize.fixed(100))
-                .setRowTemplate(TrackSize.fixed(50), TrackSize.fixed(50), TrackSize.fixed(50));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(100), CssTrackSize.fixed(100), CssTrackSize.fixed(100))
+                .setRowTemplate(CssTrackSize.fixed(50), CssTrackSize.fixed(50), CssTrackSize.fixed(50));
         javax.swing.JPanel panel = createContainer(layout, 300, 150);
 
         Component big = fixedSize(180, 80);
         Component a = fixedSize(80, 30);
         Component b = fixedSize(80, 30);
 
-        panel.add(big, new GridConstraints().column(0).row(0).columnSpan(2).rowSpan(2));
-        panel.add(a, new GridConstraints().column(2).row(0));
-        panel.add(b, new GridConstraints().column(2).row(1));
+        panel.add(big, new CssGridConstraints().column(0).row(0).columnSpan(2).rowSpan(2));
+        panel.add(a, new CssGridConstraints().column(2).row(0));
+        panel.add(b, new CssGridConstraints().column(2).row(1));
         panel.doLayout();
 
         // big: x=0, y=0, w=200 (100+100), h=100 (50+50)
@@ -216,9 +216,9 @@ class GridBoxLayoutSpanTest {
 
     @Test
     void autoPlacement_withRowSpan() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(100), TrackSize.fixed(100))
-                .setRowTemplate(TrackSize.fixed(50), TrackSize.fixed(50));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(100), CssTrackSize.fixed(100))
+                .setRowTemplate(CssTrackSize.fixed(50), CssTrackSize.fixed(50));
         javax.swing.JPanel panel = createContainer(layout, 200, 100);
 
         Component tall = fixedSize(80, 80);
@@ -226,7 +226,7 @@ class GridBoxLayoutSpanTest {
         Component b = fixedSize(80, 30);
 
         // tall は rowSpan=2, 位置未指定
-        panel.add(tall, new GridConstraints().rowSpan(2));
+        panel.add(tall, new CssGridConstraints().rowSpan(2));
         panel.add(a);
         panel.add(b);
         panel.doLayout();
@@ -247,8 +247,8 @@ class GridBoxLayoutSpanTest {
 
     @Test
     void span_expandsAutoTrack() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.auto(), TrackSize.auto());
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.auto(), CssTrackSize.auto());
         javax.swing.JPanel panel = createContainer(layout, 400, 100);
 
         // 単体アイテム: 各列 50px
@@ -257,9 +257,9 @@ class GridBoxLayoutSpanTest {
         // スパンアイテム: 2列で 200px 必要
         Component wide = fixedSize(200, 30);
 
-        panel.add(a, new GridConstraints().column(0).row(0));
-        panel.add(b, new GridConstraints().column(1).row(0));
-        panel.add(wide, new GridConstraints().column(0).row(1).columnSpan(2));
+        panel.add(a, new CssGridConstraints().column(0).row(0));
+        panel.add(b, new CssGridConstraints().column(1).row(0));
+        panel.add(wide, new CssGridConstraints().column(0).row(1).columnSpan(2));
         panel.doLayout();
 
         // auto トラックの合計が 200px 以上になるはず
@@ -272,13 +272,13 @@ class GridBoxLayoutSpanTest {
     @Test
     void autoPlacement_columnSpanExceedsColumnCount() {
         // 2列テンプレートだが columnSpan=3 のアイテムがある
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(100), TrackSize.fixed(100));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(100), CssTrackSize.fixed(100));
         javax.swing.JPanel panel = createContainer(layout, 400, 100);
 
         Component wide = fixedSize(200, 30);
         // columnSpan=3 > numCols=2 → numCols が 3 に拡張されるべき
-        panel.add(wide, new GridConstraints().columnSpan(3));
+        panel.add(wide, new CssGridConstraints().columnSpan(3));
         panel.doLayout();
 
         // 無限ループにならず、正常にレイアウトされる
@@ -291,9 +291,9 @@ class GridBoxLayoutSpanTest {
 
     @Test
     void autoPlacement_skipsOccupied_exactPositions() {
-        GridBoxLayout layout = new GridBoxLayout()
-                .setColumnTemplate(TrackSize.fixed(100), TrackSize.fixed(100), TrackSize.fixed(100))
-                .setRowTemplate(TrackSize.fixed(50), TrackSize.fixed(50));
+        CssGridLayout layout = new CssGridLayout()
+                .setColumnTemplate(CssTrackSize.fixed(100), CssTrackSize.fixed(100), CssTrackSize.fixed(100))
+                .setRowTemplate(CssTrackSize.fixed(50), CssTrackSize.fixed(50));
         javax.swing.JPanel panel = createContainer(layout, 300, 100);
 
         Component positioned = fixedSize(80, 30);
@@ -302,7 +302,7 @@ class GridBoxLayoutSpanTest {
         Component auto3 = fixedSize(80, 30);
 
         // (1,0) に明示的配置
-        panel.add(positioned, new GridConstraints().column(1).row(0));
+        panel.add(positioned, new CssGridConstraints().column(1).row(0));
         panel.add(auto1);
         panel.add(auto2);
         panel.add(auto3);

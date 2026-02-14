@@ -10,16 +10,16 @@ import javax.swing.JPanel;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.to0mi1.swuit.layout.flex.FlexBoxLayoutTest.*;
+import static org.to0mi1.swuit.layout.flex.CssFlexLayoutTest.*;
 
-class FlexBoxLayoutAlignTest {
+class CssFlexLayoutAlignTest {
 
     // === alignItems ===
 
     @Test
     void alignItems_stretch() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW)
-                .setAlignItems(AlignItems.STRETCH);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW)
+                .setCssAlignItems(CssAlignItems.STRETCH);
         JPanel panel = createContainer(layout, 300, 100);
         Component a = fixedSize(100, 30);
         panel.add(a);
@@ -30,8 +30,8 @@ class FlexBoxLayoutAlignTest {
 
     @Test
     void alignItems_flexStart() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW)
-                .setAlignItems(AlignItems.FLEX_START);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW)
+                .setCssAlignItems(CssAlignItems.FLEX_START);
         JPanel panel = createContainer(layout, 300, 100);
         Component a = fixedSize(100, 30);
         panel.add(a);
@@ -43,8 +43,8 @@ class FlexBoxLayoutAlignTest {
 
     @Test
     void alignItems_flexEnd() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW)
-                .setAlignItems(AlignItems.FLEX_END);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW)
+                .setCssAlignItems(CssAlignItems.FLEX_END);
         JPanel panel = createContainer(layout, 300, 100);
         Component a = fixedSize(100, 30);
         panel.add(a);
@@ -56,8 +56,8 @@ class FlexBoxLayoutAlignTest {
 
     @Test
     void alignItems_center() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW)
-                .setAlignItems(AlignItems.CENTER);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW)
+                .setCssAlignItems(CssAlignItems.CENTER);
         JPanel panel = createContainer(layout, 300, 100);
         Component a = fixedSize(100, 30);
         panel.add(a);
@@ -70,14 +70,14 @@ class FlexBoxLayoutAlignTest {
     // === alignSelf ===
 
     @Test
-    void alignSelf_overridesAlignItems() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW)
-                .setAlignItems(AlignItems.STRETCH);
+    void alignSelf_overridesCssAlignItems() {
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW)
+                .setCssAlignItems(CssAlignItems.STRETCH);
         JPanel panel = createContainer(layout, 300, 100);
         Component a = fixedSize(100, 30);
         Component b = fixedSize(100, 30);
         panel.add(a); // STRETCH
-        panel.add(b, new FlexConstraints().alignSelf(AlignSelf.CENTER));
+        panel.add(b, new CssFlexConstraints().alignSelf(CssAlignSelf.CENTER));
         panel.doLayout();
 
         assertEquals(100, boundsOf(a).height); // STRETCH
@@ -86,12 +86,12 @@ class FlexBoxLayoutAlignTest {
     }
 
     @Test
-    void alignSelf_auto_inheritsAlignItems() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW)
-                .setAlignItems(AlignItems.FLEX_END);
+    void alignSelf_auto_inheritsCssAlignItems() {
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW)
+                .setCssAlignItems(CssAlignItems.FLEX_END);
         JPanel panel = createContainer(layout, 300, 100);
         Component a = fixedSize(100, 30);
-        panel.add(a, new FlexConstraints().alignSelf(AlignSelf.AUTO));
+        panel.add(a, new CssFlexConstraints().alignSelf(CssAlignSelf.AUTO));
         panel.doLayout();
 
         // AUTO → FLEX_END
@@ -100,17 +100,17 @@ class FlexBoxLayoutAlignTest {
 
     @Test
     void alignSelf_allVariants() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW)
-                .setAlignItems(AlignItems.STRETCH);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW)
+                .setCssAlignItems(CssAlignItems.STRETCH);
         JPanel panel = createContainer(layout, 500, 100);
         Component start = fixedSize(100, 30);
         Component end = fixedSize(100, 30);
         Component center = fixedSize(100, 30);
         Component stretch = fixedSize(100, 30);
-        panel.add(start, new FlexConstraints().alignSelf(AlignSelf.FLEX_START));
-        panel.add(end, new FlexConstraints().alignSelf(AlignSelf.FLEX_END));
-        panel.add(center, new FlexConstraints().alignSelf(AlignSelf.CENTER));
-        panel.add(stretch, new FlexConstraints().alignSelf(AlignSelf.STRETCH));
+        panel.add(start, new CssFlexConstraints().alignSelf(CssAlignSelf.FLEX_START));
+        panel.add(end, new CssFlexConstraints().alignSelf(CssAlignSelf.FLEX_END));
+        panel.add(center, new CssFlexConstraints().alignSelf(CssAlignSelf.CENTER));
+        panel.add(stretch, new CssFlexConstraints().alignSelf(CssAlignSelf.STRETCH));
         panel.doLayout();
 
         assertEquals(0, boundsOf(start).y);
@@ -130,8 +130,8 @@ class FlexBoxLayoutAlignTest {
 
     @Test
     void alignItems_column_center() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.COLUMN)
-                .setAlignItems(AlignItems.CENTER);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.COLUMN)
+                .setCssAlignItems(CssAlignItems.CENTER);
         JPanel panel = createContainer(layout, 300, 400);
         Component a = fixedSize(100, 30);
         panel.add(a);
@@ -145,13 +145,13 @@ class FlexBoxLayoutAlignTest {
 
     @Test
     void flexShrink_proportional() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW);
         JPanel panel = createContainer(layout, 200, 100);
         // total basis = 150+150=300, overflow=100
         Component a = fixedSize(150, 30);
         Component b = fixedSize(150, 30);
-        panel.add(a, new FlexConstraints().flexShrink(1));
-        panel.add(b, new FlexConstraints().flexShrink(1));
+        panel.add(a, new CssFlexConstraints().flexShrink(1));
+        panel.add(b, new CssFlexConstraints().flexShrink(1));
         panel.doLayout();
 
         // 均等縮小 → 各 100
@@ -161,12 +161,12 @@ class FlexBoxLayoutAlignTest {
 
     @Test
     void flexShrink_zero_preventsShrink() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW);
         JPanel panel = createContainer(layout, 200, 100);
         Component a = fixedSize(150, 30);
         Component b = fixedSize(150, 30);
-        panel.add(a, new FlexConstraints().flexShrink(0));
-        panel.add(b, new FlexConstraints().flexShrink(1).minWidth(0));
+        panel.add(a, new CssFlexConstraints().flexShrink(0));
+        panel.add(b, new CssFlexConstraints().flexShrink(1).minWidth(0));
         panel.doLayout();
 
         // a は縮まない、b が全縮小
@@ -178,10 +178,10 @@ class FlexBoxLayoutAlignTest {
 
     @Test
     void flexBasisPercent() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW);
         JPanel panel = createContainer(layout, 400, 100);
         Component a = fixedSize(100, 30);
-        panel.add(a, new FlexConstraints().flexBasisPercent(50));
+        panel.add(a, new CssFlexConstraints().flexBasisPercent(50));
         panel.doLayout();
 
         // basis = 50% of 400 = 200
@@ -192,12 +192,12 @@ class FlexBoxLayoutAlignTest {
 
     @Test
     void maxWidth_clampsGrow() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW);
         JPanel panel = createContainer(layout, 400, 100);
         Component a = fixedSize(0, 30);
         Component b = fixedSize(0, 30);
-        panel.add(a, new FlexConstraints().flexGrow(1).maxWidth(100));
-        panel.add(b, new FlexConstraints().flexGrow(1));
+        panel.add(a, new CssFlexConstraints().flexGrow(1).maxWidth(100));
+        panel.add(b, new CssFlexConstraints().flexGrow(1));
         panel.doLayout();
 
         // a は max 100 でクランプ、残り 300 が b へ
@@ -207,12 +207,12 @@ class FlexBoxLayoutAlignTest {
 
     @Test
     void minWidth_preventsShrink() {
-        FlexBoxLayout layout = new FlexBoxLayout(FlexDirection.ROW);
+        CssFlexLayout layout = new CssFlexLayout(CssFlexDirection.ROW);
         JPanel panel = createContainer(layout, 200, 100);
         Component a = fixedSize(150, 30);
         Component b = fixedSize(150, 30);
-        panel.add(a, new FlexConstraints().flexShrink(1).minWidth(120));
-        panel.add(b, new FlexConstraints().flexShrink(1));
+        panel.add(a, new CssFlexConstraints().flexShrink(1).minWidth(120));
+        panel.add(b, new CssFlexConstraints().flexShrink(1));
         panel.doLayout();
 
         // a は min 120 でクランプ、b が残り80を受け持つ

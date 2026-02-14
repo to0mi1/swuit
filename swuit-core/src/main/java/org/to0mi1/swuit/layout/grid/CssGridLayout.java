@@ -17,44 +17,44 @@ import java.util.Map;
  * セル内アライメント (justifyItems/alignItems) をサポートする。
  *
  * <pre>{@code
- * GridBoxLayout layout = new GridBoxLayout()
- *     .setColumnTemplate(TrackSize.fixed(100), TrackSize.fr(1), TrackSize.fr(2))
- *     .setRowTemplate(TrackSize.fixed(50), TrackSize.fr(1))
+ * CssGridLayout layout = new CssGridLayout()
+ *     .setColumnTemplate(CssTrackSize.fixed(100), CssTrackSize.fr(1), CssTrackSize.fr(2))
+ *     .setRowTemplate(CssTrackSize.fixed(50), CssTrackSize.fr(1))
  *     .setColumnGap(8).setRowGap(8);
  *
  * JPanel panel = new JPanel(layout);
- * panel.add(header, new GridConstraints().column(0).row(0).columnSpan(3));
- * panel.add(sidebar, new GridConstraints().column(0).row(1));
- * panel.add(content, new GridConstraints().column(1).row(1).columnSpan(2));
+ * panel.add(header, new CssGridConstraints().column(0).row(0).columnSpan(3));
+ * panel.add(sidebar, new CssGridConstraints().column(0).row(1));
+ * panel.add(content, new CssGridConstraints().column(1).row(1).columnSpan(2));
  * }</pre>
  */
-public class GridBoxLayout implements LayoutManager2 {
+public class CssGridLayout implements LayoutManager2 {
 
-    private TrackSize[] columnTemplate = {};
-    private TrackSize[] rowTemplate = {};
+    private CssTrackSize[] columnTemplate = {};
+    private CssTrackSize[] rowTemplate = {};
     private int columnGap = 0;
     private int rowGap = 0;
-    private JustifyItems justifyItems = JustifyItems.STRETCH;
-    private AlignItems alignItems = AlignItems.STRETCH;
+    private CssJustifyItems justifyItems = CssJustifyItems.STRETCH;
+    private CssAlignItems alignItems = CssAlignItems.STRETCH;
 
-    private final Map<Component, GridConstraints> constraintsMap = new LinkedHashMap<>();
+    private final Map<Component, CssGridConstraints> constraintsMap = new LinkedHashMap<>();
 
     // --- プロパティ (fluent setters) ---
 
-    public TrackSize[] getColumnTemplate() {
+    public CssTrackSize[] getColumnTemplate() {
         return columnTemplate.clone();
     }
 
-    public GridBoxLayout setColumnTemplate(TrackSize... columnTemplate) {
+    public CssGridLayout setColumnTemplate(CssTrackSize... columnTemplate) {
         this.columnTemplate = columnTemplate.clone();
         return this;
     }
 
-    public TrackSize[] getRowTemplate() {
+    public CssTrackSize[] getRowTemplate() {
         return rowTemplate.clone();
     }
 
-    public GridBoxLayout setRowTemplate(TrackSize... rowTemplate) {
+    public CssGridLayout setRowTemplate(CssTrackSize... rowTemplate) {
         this.rowTemplate = rowTemplate.clone();
         return this;
     }
@@ -63,7 +63,7 @@ public class GridBoxLayout implements LayoutManager2 {
         return columnGap;
     }
 
-    public GridBoxLayout setColumnGap(int columnGap) {
+    public CssGridLayout setColumnGap(int columnGap) {
         this.columnGap = columnGap;
         return this;
     }
@@ -72,25 +72,25 @@ public class GridBoxLayout implements LayoutManager2 {
         return rowGap;
     }
 
-    public GridBoxLayout setRowGap(int rowGap) {
+    public CssGridLayout setRowGap(int rowGap) {
         this.rowGap = rowGap;
         return this;
     }
 
-    public JustifyItems getJustifyItems() {
+    public CssJustifyItems getCssJustifyItems() {
         return justifyItems;
     }
 
-    public GridBoxLayout setJustifyItems(JustifyItems justifyItems) {
+    public CssGridLayout setCssJustifyItems(CssJustifyItems justifyItems) {
         this.justifyItems = justifyItems;
         return this;
     }
 
-    public AlignItems getAlignItems() {
+    public CssAlignItems getCssAlignItems() {
         return alignItems;
     }
 
-    public GridBoxLayout setAlignItems(AlignItems alignItems) {
+    public CssGridLayout setCssAlignItems(CssAlignItems alignItems) {
         this.alignItems = alignItems;
         return this;
     }
@@ -100,12 +100,12 @@ public class GridBoxLayout implements LayoutManager2 {
     @Override
     public void addLayoutComponent(Component comp, Object constraints) {
         if (constraints == null) {
-            constraintsMap.put(comp, new GridConstraints());
-        } else if (constraints instanceof GridConstraints gc) {
+            constraintsMap.put(comp, new CssGridConstraints());
+        } else if (constraints instanceof CssGridConstraints gc) {
             constraintsMap.put(comp, gc.clone());
         } else {
             throw new IllegalArgumentException(
-                    "constraints must be a GridConstraints instance: " + constraints.getClass().getName());
+                    "constraints must be a CssGridConstraints instance: " + constraints.getClass().getName());
         }
     }
 
@@ -145,7 +145,7 @@ public class GridBoxLayout implements LayoutManager2 {
     public Dimension preferredLayoutSize(Container parent) {
         synchronized (parent.getTreeLock()) {
             Insets insets = parent.getInsets();
-            List<GridItem> items = collectItems(parent);
+            List<CssGridItem> items = collectItems(parent);
             if (items.isEmpty()) {
                 return new Dimension(insets.left + insets.right, insets.top + insets.bottom);
             }
@@ -155,17 +155,17 @@ public class GridBoxLayout implements LayoutManager2 {
             int numCols = resolveColumnCount(items);
             int numRows = resolveRowCount(items);
 
-            List<GridTrack> colTracks = buildTracks(columnTemplate, numCols);
-            List<GridTrack> rowTracks = buildTracks(rowTemplate, numRows);
+            List<CssGridTrack> colTracks = buildTracks(columnTemplate, numCols);
+            List<CssGridTrack> rowTracks = buildTracks(rowTemplate, numRows);
 
             // fr トラックはコンテンツサイズにフォールバック
-            resolvePreferredTrackSizes(colTracks, items, true);
-            resolvePreferredTrackSizes(rowTracks, items, false);
+            resolvePreferredCssTrackSizes(colTracks, items, true);
+            resolvePreferredCssTrackSizes(rowTracks, items, false);
             resolveSpanItems(colTracks, items, true);
             resolveSpanItems(rowTracks, items, false);
 
-            int width = sumTrackSizes(colTracks) + columnGap * Math.max(0, numCols - 1);
-            int height = sumTrackSizes(rowTracks) + rowGap * Math.max(0, numRows - 1);
+            int width = sumCssTrackSizes(colTracks) + columnGap * Math.max(0, numCols - 1);
+            int height = sumCssTrackSizes(rowTracks) + rowGap * Math.max(0, numRows - 1);
 
             return new Dimension(
                     width + insets.left + insets.right,
@@ -188,7 +188,7 @@ public class GridBoxLayout implements LayoutManager2 {
             int availableHeight = parent.getHeight() - insets.top - insets.bottom;
 
             // Phase 1: アイテム収集
-            List<GridItem> items = collectItems(parent);
+            List<CssGridItem> items = collectItems(parent);
             if (items.isEmpty()) return;
 
             // Phase 2: 自動配置
@@ -198,18 +198,18 @@ public class GridBoxLayout implements LayoutManager2 {
             int numRows = resolveRowCount(items);
 
             // Phase 3: トラックサイズ解決
-            List<GridTrack> colTracks = buildTracks(columnTemplate, numCols);
-            List<GridTrack> rowTracks = buildTracks(rowTemplate, numRows);
+            List<CssGridTrack> colTracks = buildTracks(columnTemplate, numCols);
+            List<CssGridTrack> rowTracks = buildTracks(rowTemplate, numRows);
 
-            resolveTrackSizes(colTracks, items, true, availableWidth, numCols);
-            resolveTrackSizes(rowTracks, items, false, availableHeight, numRows);
+            resolveCssTrackSizes(colTracks, items, true, availableWidth, numCols);
+            resolveCssTrackSizes(rowTracks, items, false, availableHeight, numRows);
 
             // トラックオフセット計算
             computeOffsets(colTracks, columnGap);
             computeOffsets(rowTracks, rowGap);
 
             // Phase 4-5: アライメント適用 + 座標確定
-            for (GridItem item : items) {
+            for (CssGridItem item : items) {
                 int cellX = colTracks.get(item.column).offset;
                 int cellY = rowTracks.get(item.row).offset;
                 int cellW = spanSize(colTracks, item.column, item.columnSpan, columnGap);
@@ -224,7 +224,7 @@ public class GridBoxLayout implements LayoutManager2 {
                 Dimension pref = item.component.getPreferredSize();
 
                 // 水平方向アライメント
-                JustifyItems hAlign = resolveJustify(item.constraints.getJustifySelf());
+                CssJustifyItems hAlign = resolveJustify(item.constraints.getCssJustifySelf());
                 int x, w;
                 switch (hAlign) {
                     case START:
@@ -246,7 +246,7 @@ public class GridBoxLayout implements LayoutManager2 {
                 }
 
                 // 垂直方向アライメント
-                AlignItems vAlign = resolveAlign(item.constraints.getAlignSelf());
+                CssAlignItems vAlign = resolveAlign(item.constraints.getCssAlignSelf());
                 int y, h;
                 switch (vAlign) {
                     case START:
@@ -274,32 +274,32 @@ public class GridBoxLayout implements LayoutManager2 {
 
     // --- Phase 1: アイテム収集 ---
 
-    private List<GridItem> collectItems(Container parent) {
-        List<GridItem> items = new ArrayList<>();
+    private List<CssGridItem> collectItems(Container parent) {
+        List<CssGridItem> items = new ArrayList<>();
         int addOrder = 0;
         for (int i = 0; i < parent.getComponentCount(); i++) {
             Component child = parent.getComponent(i);
             if (!child.isVisible()) continue;
-            GridConstraints gc = getConstraints(child);
-            items.add(new GridItem(child, gc, addOrder++));
+            CssGridConstraints gc = getConstraints(child);
+            items.add(new CssGridItem(child, gc, addOrder++));
         }
         return items;
     }
 
     // --- Phase 2: 自動配置 ---
 
-    private void autoPlace(List<GridItem> items) {
+    private void autoPlace(List<CssGridItem> items) {
         int numCols = columnTemplate.length > 0 ? columnTemplate.length : 1;
 
         // まず列数を確定（明示的列指定があれば反映）
-        for (GridItem item : items) {
+        for (CssGridItem item : items) {
             if (item.column >= 0) {
                 numCols = Math.max(numCols, item.column + item.columnSpan);
             }
         }
 
         // columnSpan が列数を超えるアイテムがあれば列数を拡張
-        for (GridItem item : items) {
+        for (CssGridItem item : items) {
             if (!item.isPositioned() && item.columnSpan > numCols) {
                 numCols = item.columnSpan;
             }
@@ -309,7 +309,7 @@ public class GridBoxLayout implements LayoutManager2 {
         List<boolean[]> occupied = new ArrayList<>();
 
         // 明示的位置のアイテムを先に配置
-        for (GridItem item : items) {
+        for (CssGridItem item : items) {
             if (item.isPositioned()) {
                 ensureRows(occupied, item.row + item.rowSpan, numCols);
                 markOccupied(occupied, item.row, item.column, item.rowSpan, item.columnSpan);
@@ -319,7 +319,7 @@ public class GridBoxLayout implements LayoutManager2 {
         // 未配置アイテムを行優先で空きセルに配置
         int cursorRow = 0;
         int cursorCol = 0;
-        for (GridItem item : items) {
+        for (CssGridItem item : items) {
             if (item.isPositioned()) continue;
 
             while (true) {
@@ -376,17 +376,17 @@ public class GridBoxLayout implements LayoutManager2 {
 
     // --- グリッドサイズ解決 ---
 
-    private int resolveColumnCount(List<GridItem> items) {
+    private int resolveColumnCount(List<CssGridItem> items) {
         int count = columnTemplate.length;
-        for (GridItem item : items) {
+        for (CssGridItem item : items) {
             count = Math.max(count, item.column + item.columnSpan);
         }
         return Math.max(count, 1);
     }
 
-    private int resolveRowCount(List<GridItem> items) {
+    private int resolveRowCount(List<CssGridItem> items) {
         int count = rowTemplate.length;
-        for (GridItem item : items) {
+        for (CssGridItem item : items) {
             count = Math.max(count, item.row + item.rowSpan);
         }
         return Math.max(count, 1);
@@ -394,18 +394,18 @@ public class GridBoxLayout implements LayoutManager2 {
 
     // --- トラック構築 ---
 
-    private List<GridTrack> buildTracks(TrackSize[] template, int count) {
-        List<GridTrack> tracks = new ArrayList<>(count);
+    private List<CssGridTrack> buildTracks(CssTrackSize[] template, int count) {
+        List<CssGridTrack> tracks = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
-            TrackSize def = i < template.length ? template[i] : TrackSize.auto();
-            tracks.add(new GridTrack(def));
+            CssTrackSize def = i < template.length ? template[i] : CssTrackSize.auto();
+            tracks.add(new CssGridTrack(def));
         }
         return tracks;
     }
 
     // --- Phase 3: トラックサイズ解決 ---
 
-    private void resolveTrackSizes(List<GridTrack> tracks, List<GridItem> items,
+    private void resolveCssTrackSizes(List<CssGridTrack> tracks, List<CssGridItem> items,
                                    boolean isColumn, int available, int trackCount) {
         // Step 1: Fixed + Auto トラックのベースサイズ
         resolveAutoAndFixedTracks(tracks, items, isColumn);
@@ -416,8 +416,8 @@ public class GridBoxLayout implements LayoutManager2 {
         // Step 3: Fr トラック → 残余スペースを分配
         int usedSpace = 0;
         float totalFr = 0;
-        for (GridTrack track : tracks) {
-            if (track.definition.getType() == TrackSizeType.FR) {
+        for (CssGridTrack track : tracks) {
+            if (track.definition.getType() == CssTrackSizeType.FR) {
                 totalFr += track.definition.getValue();
             } else {
                 usedSpace += track.baseSize;
@@ -429,8 +429,8 @@ public class GridBoxLayout implements LayoutManager2 {
         if (totalFr > 0) {
             float remainingFr = totalFr;
             int remainingSpace = freeSpace;
-            for (GridTrack track : tracks) {
-                if (track.definition.getType() == TrackSizeType.FR) {
+            for (CssGridTrack track : tracks) {
+                if (track.definition.getType() == CssTrackSizeType.FR) {
                     if (remainingFr == track.definition.getValue()) {
                         track.baseSize = remainingSpace;
                     } else {
@@ -443,10 +443,10 @@ public class GridBoxLayout implements LayoutManager2 {
         }
     }
 
-    private void resolveAutoAndFixedTracks(List<GridTrack> tracks, List<GridItem> items,
+    private void resolveAutoAndFixedTracks(List<CssGridTrack> tracks, List<CssGridItem> items,
                                            boolean isColumn) {
         for (int i = 0; i < tracks.size(); i++) {
-            GridTrack track = tracks.get(i);
+            CssGridTrack track = tracks.get(i);
             switch (track.definition.getType()) {
                 case FIXED:
                     track.baseSize = (int) track.definition.getValue();
@@ -464,10 +464,10 @@ public class GridBoxLayout implements LayoutManager2 {
     /**
      * preferredLayoutSize 用: fr トラックもコンテンツサイズでフォールバックする。
      */
-    private void resolvePreferredTrackSizes(List<GridTrack> tracks, List<GridItem> items,
+    private void resolvePreferredCssTrackSizes(List<CssGridTrack> tracks, List<CssGridItem> items,
                                             boolean isColumn) {
         for (int i = 0; i < tracks.size(); i++) {
-            GridTrack track = tracks.get(i);
+            CssGridTrack track = tracks.get(i);
             switch (track.definition.getType()) {
                 case FIXED:
                     track.baseSize = (int) track.definition.getValue();
@@ -480,9 +480,9 @@ public class GridBoxLayout implements LayoutManager2 {
         }
     }
 
-    private int maxPreferredSizeForTrack(List<GridItem> items, int trackIndex, boolean isColumn) {
+    private int maxPreferredSizeForTrack(List<CssGridItem> items, int trackIndex, boolean isColumn) {
         int max = 0;
-        for (GridItem item : items) {
+        for (CssGridItem item : items) {
             int span = isColumn ? item.columnSpan : item.rowSpan;
             int pos = isColumn ? item.column : item.row;
             if (span == 1 && pos == trackIndex) {
@@ -497,8 +497,8 @@ public class GridBoxLayout implements LayoutManager2 {
         return max;
     }
 
-    private void resolveSpanItems(List<GridTrack> tracks, List<GridItem> items, boolean isColumn) {
-        for (GridItem item : items) {
+    private void resolveSpanItems(List<CssGridTrack> tracks, List<CssGridItem> items, boolean isColumn) {
+        for (CssGridItem item : items) {
             int span = isColumn ? item.columnSpan : item.rowSpan;
             int pos = isColumn ? item.column : item.row;
             if (span <= 1) continue;
@@ -517,8 +517,8 @@ public class GridBoxLayout implements LayoutManager2 {
                 // auto / fr トラックに均等分配
                 List<Integer> growableIndices = new ArrayList<>();
                 for (int t = pos; t < pos + span && t < tracks.size(); t++) {
-                    TrackSizeType type = tracks.get(t).definition.getType();
-                    if (type == TrackSizeType.AUTO || type == TrackSizeType.FR) {
+                    CssTrackSizeType type = tracks.get(t).definition.getType();
+                    if (type == CssTrackSizeType.AUTO || type == CssTrackSizeType.FR) {
                         growableIndices.add(t);
                     }
                 }
@@ -533,7 +533,7 @@ public class GridBoxLayout implements LayoutManager2 {
         }
     }
 
-    private int spanBaseSize(List<GridTrack> tracks, int start, int span) {
+    private int spanBaseSize(List<CssGridTrack> tracks, int start, int span) {
         int size = 0;
         for (int i = start; i < start + span && i < tracks.size(); i++) {
             size += tracks.get(i).baseSize;
@@ -543,7 +543,7 @@ public class GridBoxLayout implements LayoutManager2 {
 
     // --- オフセット計算 ---
 
-    private void computeOffsets(List<GridTrack> tracks, int gap) {
+    private void computeOffsets(List<CssGridTrack> tracks, int gap) {
         int offset = 0;
         for (int i = 0; i < tracks.size(); i++) {
             tracks.get(i).offset = offset;
@@ -554,7 +554,7 @@ public class GridBoxLayout implements LayoutManager2 {
         }
     }
 
-    private int spanSize(List<GridTrack> tracks, int start, int span, int gap) {
+    private int spanSize(List<CssGridTrack> tracks, int start, int span, int gap) {
         int size = 0;
         for (int i = start; i < start + span && i < tracks.size(); i++) {
             size += tracks.get(i).baseSize;
@@ -565,9 +565,9 @@ public class GridBoxLayout implements LayoutManager2 {
         return size;
     }
 
-    private int sumTrackSizes(List<GridTrack> tracks) {
+    private int sumCssTrackSizes(List<CssGridTrack> tracks) {
         int sum = 0;
-        for (GridTrack track : tracks) {
+        for (CssGridTrack track : tracks) {
             sum += track.baseSize;
         }
         return sum;
@@ -575,32 +575,32 @@ public class GridBoxLayout implements LayoutManager2 {
 
     // --- アライメント解決 ---
 
-    private JustifyItems resolveJustify(JustifySelf self) {
-        if (self == JustifySelf.AUTO) return justifyItems;
+    private CssJustifyItems resolveJustify(CssJustifySelf self) {
+        if (self == CssJustifySelf.AUTO) return justifyItems;
         return switch (self) {
-            case START -> JustifyItems.START;
-            case END -> JustifyItems.END;
-            case CENTER -> JustifyItems.CENTER;
-            case STRETCH -> JustifyItems.STRETCH;
+            case START -> CssJustifyItems.START;
+            case END -> CssJustifyItems.END;
+            case CENTER -> CssJustifyItems.CENTER;
+            case STRETCH -> CssJustifyItems.STRETCH;
             default -> justifyItems;
         };
     }
 
-    private AlignItems resolveAlign(AlignSelf self) {
-        if (self == AlignSelf.AUTO) return alignItems;
+    private CssAlignItems resolveAlign(CssAlignSelf self) {
+        if (self == CssAlignSelf.AUTO) return alignItems;
         return switch (self) {
-            case START -> AlignItems.START;
-            case END -> AlignItems.END;
-            case CENTER -> AlignItems.CENTER;
-            case STRETCH -> AlignItems.STRETCH;
+            case START -> CssAlignItems.START;
+            case END -> CssAlignItems.END;
+            case CENTER -> CssAlignItems.CENTER;
+            case STRETCH -> CssAlignItems.STRETCH;
             default -> alignItems;
         };
     }
 
     // --- ユーティリティ ---
 
-    private GridConstraints getConstraints(Component comp) {
-        GridConstraints gc = constraintsMap.get(comp);
-        return gc != null ? gc : new GridConstraints();
+    private CssGridConstraints getConstraints(Component comp) {
+        CssGridConstraints gc = constraintsMap.get(comp);
+        return gc != null ? gc : new CssGridConstraints();
     }
 }
