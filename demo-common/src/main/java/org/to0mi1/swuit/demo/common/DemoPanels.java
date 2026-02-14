@@ -61,6 +61,9 @@ public final class DemoPanels {
         cardPanel.add(GridBoxLayoutDemos.gridBasic(), "gridBasic");
         cardPanel.add(GridBoxLayoutDemos.gridSpan(), "gridSpan");
         cardPanel.add(GridBoxLayoutDemos.gridAlign(), "gridAlign");
+        cardPanel.add(VirtualScrollDemos.virtualScrollGridLayout(), "virtualScrollGrid");
+        cardPanel.add(VirtualScrollDemos.virtualScrollLinearLayout(), "virtualScrollLinear");
+        cardPanel.add(VirtualScrollDemos.virtualScrollFlexLayout(), "virtualScrollFlex");
 
         // --- ツリー（左ペイン） ---
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("Demos");
@@ -96,6 +99,12 @@ public final class DemoPanels {
         grid.add(new DefaultMutableTreeNode("gridSpan"));
         grid.add(new DefaultMutableTreeNode("gridAlign"));
         root.add(grid);
+
+        DefaultMutableTreeNode virtualScroll = new DefaultMutableTreeNode("VirtualScroll");
+        virtualScroll.add(new DefaultMutableTreeNode("virtualScrollGrid"));
+        virtualScroll.add(new DefaultMutableTreeNode("virtualScrollLinear"));
+        virtualScroll.add(new DefaultMutableTreeNode("virtualScrollFlex"));
+        root.add(virtualScroll);
 
         JTree tree = new JTree(root);
         tree.setRootVisible(false);
