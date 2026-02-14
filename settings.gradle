@@ -1,0 +1,6 @@
+rootProject.name = 'swuit'
+
+include 'swuit-core'
+include 'demo-common'
+include 'demo-swing'
+include 'demo-flatlaf'

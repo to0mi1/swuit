@@ -1,0 +1,12 @@
+plugins {
+    id 'application'
+}
+
+dependencies {
+    implementation project(':demo-common')
+    implementation 'com.formdev:flatlaf:3.5.4'
+}
+
+application {
+    mainClass = 'org.to0mi1.swuit.demo.flatlaf.Main'
+}
