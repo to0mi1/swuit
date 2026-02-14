@@ -19,8 +19,11 @@ import org.to0mi1.swuit.component.autocomplete.ContainsMatcher;
 import org.to0mi1.swuit.component.autocomplete.StartsWithMatcher;
 import org.to0mi1.swuit.layout.Gravity;
 import org.to0mi1.swuit.layout.Orientation;
-import org.to0mi1.swuit.layout.flex.AlignItems;
-import org.to0mi1.swuit.layout.flex.AlignSelf;
+import org.to0mi1.swuit.layout.grid.AlignSelf;
+import org.to0mi1.swuit.layout.grid.GridBoxLayout;
+import org.to0mi1.swuit.layout.grid.GridConstraints;
+import org.to0mi1.swuit.layout.grid.JustifySelf;
+import org.to0mi1.swuit.layout.grid.TrackSize;
 import org.to0mi1.swuit.layout.flex.FlexBoxLayout;
 import org.to0mi1.swuit.layout.flex.FlexConstraints;
 import org.to0mi1.swuit.layout.flex.FlexDirection;
@@ -381,13 +384,14 @@ public final class DemoPanels {
     /** FlexBox: alignItems + alignSelf */
     public static JComponent flexAlign() {
         JPanel panel = new JPanel(new FlexBoxLayout(FlexDirection.ROW)
-                .setAlignItems(AlignItems.CENTER)
+                .setAlignItems(org.to0mi1.swuit.layout.flex.AlignItems.CENTER)
                 .setMainAxisGap(8));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         JPanel a = colorPanel(new Color(0x4CAF50), "STRETCH");
         a.setPreferredSize(new Dimension(100, 40));
-        panel.add(a, new FlexConstraints().flexGrow(1).alignSelf(AlignSelf.STRETCH));
+        panel.add(a, new FlexConstraints().flexGrow(1)
+                .alignSelf(org.to0mi1.swuit.layout.flex.AlignSelf.STRETCH));
 
         JPanel b = colorPanel(new Color(0x2196F3), "CENTER");
         b.setPreferredSize(new Dimension(100, 60));
@@ -395,11 +399,93 @@ public final class DemoPanels {
 
         JPanel c = colorPanel(new Color(0xFF9800), "FLEX_END");
         c.setPreferredSize(new Dimension(100, 30));
-        panel.add(c, new FlexConstraints().flexGrow(1).alignSelf(AlignSelf.FLEX_END));
+        panel.add(c, new FlexConstraints().flexGrow(1)
+                .alignSelf(org.to0mi1.swuit.layout.flex.AlignSelf.FLEX_END));
 
         JPanel d = colorPanel(new Color(0xE91E63), "FLEX_START");
         d.setPreferredSize(new Dimension(100, 50));
-        panel.add(d, new FlexConstraints().flexGrow(1).alignSelf(AlignSelf.FLEX_START));
+        panel.add(d, new FlexConstraints().flexGrow(1)
+                .alignSelf(org.to0mi1.swuit.layout.flex.AlignSelf.FLEX_START));
+
+        return panel;
+    }
+
+    // === GridBoxLayout デモ ===
+
+    /** Grid: fixed + fr 混在の基本配置 */
+    public static JComponent gridBasic() {
+        GridBoxLayout layout = new GridBoxLayout()
+                .setColumnTemplate(TrackSize.fixed(100), TrackSize.fr(1), TrackSize.fr(2))
+                .setRowTemplate(TrackSize.fixed(50), TrackSize.fr(1))
+                .setColumnGap(4).setRowGap(4);
+        JPanel panel = new JPanel(layout);
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        panel.add(colorPanel(new Color(0x4CAF50), "固定 100px"),
+                new GridConstraints().column(0).row(0));
+        panel.add(colorPanel(new Color(0x2196F3), "fr=1"),
+                new GridConstraints().column(1).row(0));
+        panel.add(colorPanel(new Color(0xFF9800), "fr=2"),
+                new GridConstraints().column(2).row(0));
+        panel.add(colorPanel(new Color(0x9C27B0), "(0,1)"),
+                new GridConstraints().column(0).row(1));
+        panel.add(colorPanel(new Color(0xE91E63), "(1,1)"),
+                new GridConstraints().column(1).row(1));
+        panel.add(colorPanel(new Color(0x607D8B), "(2,1)"),
+                new GridConstraints().column(2).row(1));
+        return panel;
+    }
+
+    /** Grid: ヘッダー/サイドバー/コンテンツ/フッターのスパンレイアウト */
+    public static JComponent gridSpan() {
+        GridBoxLayout layout = new GridBoxLayout()
+                .setColumnTemplate(TrackSize.fixed(120), TrackSize.fr(1), TrackSize.fr(1))
+                .setRowTemplate(TrackSize.fixed(50), TrackSize.fr(1), TrackSize.fixed(40))
+                .setColumnGap(4).setRowGap(4);
+        JPanel panel = new JPanel(layout);
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        panel.add(colorPanel(new Color(0x2196F3), "Header (span 3)"),
+                new GridConstraints().column(0).row(0).columnSpan(3));
+        panel.add(colorPanel(new Color(0x4CAF50), "Sidebar"),
+                new GridConstraints().column(0).row(1));
+        panel.add(colorPanel(new Color(0xFFC107), "Content (span 2)"),
+                new GridConstraints().column(1).row(1).columnSpan(2));
+        panel.add(colorPanel(new Color(0x607D8B), "Footer (span 3)"),
+                new GridConstraints().column(0).row(2).columnSpan(3));
+        return panel;
+    }
+
+    /** Grid: アライメント比較 */
+    public static JComponent gridAlign() {
+        GridBoxLayout layout = new GridBoxLayout()
+                .setColumnTemplate(TrackSize.fr(1), TrackSize.fr(1))
+                .setRowTemplate(TrackSize.fr(1), TrackSize.fr(1))
+                .setColumnGap(8).setRowGap(8);
+        JPanel panel = new JPanel(layout);
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JPanel a = colorPanel(new Color(0x4CAF50), "STRETCH");
+        a.setPreferredSize(new Dimension(100, 40));
+        panel.add(a, new GridConstraints().column(0).row(0));
+
+        JPanel b = colorPanel(new Color(0x2196F3), "CENTER");
+        b.setPreferredSize(new Dimension(100, 40));
+        panel.add(b, new GridConstraints().column(1).row(0)
+                .justifySelf(JustifySelf.CENTER)
+                .alignSelf(AlignSelf.CENTER));
+
+        JPanel c = colorPanel(new Color(0xFF9800), "START");
+        c.setPreferredSize(new Dimension(100, 40));
+        panel.add(c, new GridConstraints().column(0).row(1)
+                .justifySelf(JustifySelf.START)
+                .alignSelf(AlignSelf.START));
+
+        JPanel d = colorPanel(new Color(0xE91E63), "END");
+        d.setPreferredSize(new Dimension(100, 40));
+        panel.add(d, new GridConstraints().column(1).row(1)
+                .justifySelf(JustifySelf.END)
+                .alignSelf(AlignSelf.END));
 
         return panel;
     }
@@ -434,6 +520,9 @@ public final class DemoPanels {
         tabs.addTab("Flex: 基本", flexBasic());
         tabs.addTab("Flex: Wrap", flexWrap());
         tabs.addTab("Flex: Align", flexAlign());
+        tabs.addTab("Grid: 基本", gridBasic());
+        tabs.addTab("Grid: Span", gridSpan());
+        tabs.addTab("Grid: Align", gridAlign());
         return tabs;
     }
 }
