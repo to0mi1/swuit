@@ -64,6 +64,10 @@ public final class DemoPanels {
         cardPanel.add(VirtualScrollDemos.virtualScrollGridLayout(), "virtualScrollGrid");
         cardPanel.add(VirtualScrollDemos.virtualScrollLinearLayout(), "virtualScrollLinear");
         cardPanel.add(VirtualScrollDemos.virtualScrollFlexLayout(), "virtualScrollFlex");
+        cardPanel.add(RecyclerDemos.recyclerLinearSimple(), "recyclerLinearSimple");
+        cardPanel.add(RecyclerDemos.recyclerLinearComplex(), "recyclerLinearComplex");
+        cardPanel.add(RecyclerDemos.recyclerGrid(), "recyclerGrid");
+        cardPanel.add(RecyclerDemos.recyclerStaggeredGrid(), "recyclerStaggeredGrid");
 
         // --- ツリー（左ペイン） ---
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("Demos");
@@ -105,6 +109,13 @@ public final class DemoPanels {
         virtualScroll.add(new DefaultMutableTreeNode("virtualScrollLinear"));
         virtualScroll.add(new DefaultMutableTreeNode("virtualScrollFlex"));
         root.add(virtualScroll);
+
+        DefaultMutableTreeNode recycler = new DefaultMutableTreeNode("RecyclerPane");
+        recycler.add(new DefaultMutableTreeNode("recyclerLinearSimple"));
+        recycler.add(new DefaultMutableTreeNode("recyclerLinearComplex"));
+        recycler.add(new DefaultMutableTreeNode("recyclerGrid"));
+        recycler.add(new DefaultMutableTreeNode("recyclerStaggeredGrid"));
+        root.add(recycler);
 
         JTree tree = new JTree(root);
         tree.setRootVisible(false);
