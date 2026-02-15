@@ -68,6 +68,9 @@ public final class DemoPanels {
         cardPanel.add(RecyclerDemos.recyclerLinearComplex(), "recyclerLinearComplex");
         cardPanel.add(RecyclerDemos.recyclerGrid(), "recyclerGrid");
         cardPanel.add(RecyclerDemos.recyclerStaggeredGrid(), "recyclerStaggeredGrid");
+        cardPanel.add(ImageViewDemos.imageObjectFit(), "imageObjectFit");
+        cardPanel.add(ImageViewDemos.imageObjectPosition(), "imageObjectPosition");
+        cardPanel.add(ImageViewDemos.imageAspectRatio(), "imageAspectRatio");
 
         // --- ツリー（左ペイン） ---
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("Demos");
@@ -116,6 +119,12 @@ public final class DemoPanels {
         recycler.add(new DefaultMutableTreeNode("recyclerGrid"));
         recycler.add(new DefaultMutableTreeNode("recyclerStaggeredGrid"));
         root.add(recycler);
+
+        DefaultMutableTreeNode imageView = new DefaultMutableTreeNode("ImageView");
+        imageView.add(new DefaultMutableTreeNode("imageObjectFit"));
+        imageView.add(new DefaultMutableTreeNode("imageObjectPosition"));
+        imageView.add(new DefaultMutableTreeNode("imageAspectRatio"));
+        root.add(imageView);
 
         JTree tree = new JTree(root);
         tree.setRootVisible(false);
