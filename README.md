@@ -1,5 +1,7 @@
 # swuit
 
+[English](README.en.md) | 日本語
+
 Android の `LinearLayout` / `RelativeLayout` や CSS の `Flexbox` / `Grid` に相当するレイアウトマネージャー、
 および `RecyclerView` 相当のコンポーネントなどを Swing 向けに提供するライブラリ。
 
