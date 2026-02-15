@@ -5,16 +5,100 @@ English | [日本語](README.md)
 A library that provides layout managers equivalent to Android's `LinearLayout` / `RelativeLayout` and CSS `Flexbox` / `Grid`,
 along with components such as a `RecyclerView` equivalent, for Swing.
 
-## Project Structure
+## Installation
 
-| Module | Description |
-|---|---|
-| `swuit-core` | Layout & component library |
-| `demo-common` | Shared panel generation logic for demos |
-| `demo-swing` | Demo app using plain Swing |
-| `demo-flatlaf` | Demo app with FlatLaf look and feel |
+Distributed via GitHub Packages. Authentication to the GitHub Packages repository is required.
 
-## Layouts
+### Gradle (Groovy DSL)
+
+`build.gradle`:
+
+```groovy
+repositories {
+    mavenCentral()
+    maven {
+        url = uri('https://maven.pkg.github.com/to0mi1/swuit')
+        credentials {
+            username = project.findProperty('gpr.user') ?: System.getenv('GITHUB_ACTOR')
+            password = project.findProperty('gpr.key') ?: System.getenv('GITHUB_TOKEN')
+        }
+    }
+}
+
+dependencies {
+    implementation 'org.to0mi1:swuit-core:0.2.0'
+}
+```
+
+Add credentials to `~/.gradle/gradle.properties`:
+
+```properties
+gpr.user=YOUR_GITHUB_USERNAME
+gpr.key=YOUR_GITHUB_TOKEN
+```
+
+### Gradle (Kotlin DSL)
+
+`build.gradle.kts`:
+
+```kotlin
+repositories {
+    mavenCentral()
+    maven {
+        url = uri("https://maven.pkg.github.com/to0mi1/swuit")
+        credentials {
+            username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+            password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
+}
+
+dependencies {
+    implementation("org.to0mi1:swuit-core:0.2.0")
+}
+```
+
+### Maven
+
+Add credentials to `~/.m2/settings.xml`:
+
+```xml
+<settings>
+  <servers>
+    <server>
+      <id>github</id>
+      <username>YOUR_GITHUB_USERNAME</username>
+      <password>YOUR_GITHUB_TOKEN</password>
+    </server>
+  </servers>
+</settings>
+```
+
+`pom.xml`:
+
+```xml
+<repositories>
+    <repository>
+        <id>github</id>
+        <url>https://maven.pkg.github.com/to0mi1/swuit</url>
+    </repository>
+</repositories>
+
+<dependencies>
+    <dependency>
+        <groupId>org.to0mi1</groupId>
+        <artifactId>swuit-core</artifactId>
+        <version>0.2.0</version>
+    </dependency>
+</dependencies>
+```
+
+> **Note:** The GitHub Token requires the `read:packages` scope.
+> [Creating a Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+
+## Features
+
+### Layouts
 
 | Class | Inspired By | Description |
 |---|---|---|
@@ -24,7 +108,7 @@ along with components such as a `RecyclerView` equivalent, for Swing.
 | `CssGridLayout` | CSS Grid | Grid layout with row/column templates |
 | `AspectRatioLayout` | CSS aspect-ratio | Maintains the aspect ratio of a single child |
 
-## Components
+### Components
 
 | Class | Inspired By | Description |
 |---|---|---|
@@ -593,13 +677,28 @@ An enum representing the main axis direction of a layout.
 
 ---
 
-## Build
+## Requirements
+
+- Java 17 or later
+
+## For Developers
+
+### Project Structure
+
+| Module | Description |
+|---|---|
+| `swuit-core` | Layout & component library |
+| `demo-common` | Shared panel generation logic for demos |
+| `demo-swing` | Demo app using plain Swing |
+| `demo-flatlaf` | Demo app with FlatLaf look and feel |
+
+### Build
 
 ```bash
 ./gradlew build
 ```
 
-## Running Demos
+### Running Demos
 
 ```bash
 # Plain Swing
@@ -608,7 +707,3 @@ An enum representing the main axis direction of a layout.
 # FlatLaf
 ./gradlew :demo-flatlaf:run
 ```
-
-## Requirements
-
-- Java 17 or later

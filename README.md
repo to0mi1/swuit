@@ -5,16 +5,100 @@
 Android の `LinearLayout` / `RelativeLayout` や CSS の `Flexbox` / `Grid` に相当するレイアウトマネージャー、
 および `RecyclerView` 相当のコンポーネントなどを Swing 向けに提供するライブラリ。
 
-## プロジェクト構成
+## インストール
 
-| モジュール | 説明 |
-|---|---|
-| `swuit-core` | レイアウト・コンポーネントライブラリ本体 |
-| `demo-common` | デモ共通のパネル生成ロジック |
-| `demo-swing` | 素の Swing によるデモアプリ |
-| `demo-flatlaf` | FlatLaf 適用のデモアプリ |
+GitHub Packages で配布しています。利用するには GitHub Packages リポジトリの認証設定が必要です。
 
-## レイアウト一覧
+### Gradle (Groovy DSL)
+
+`build.gradle`:
+
+```groovy
+repositories {
+    mavenCentral()
+    maven {
+        url = uri('https://maven.pkg.github.com/to0mi1/swuit')
+        credentials {
+            username = project.findProperty('gpr.user') ?: System.getenv('GITHUB_ACTOR')
+            password = project.findProperty('gpr.key') ?: System.getenv('GITHUB_TOKEN')
+        }
+    }
+}
+
+dependencies {
+    implementation 'org.to0mi1:swuit-core:0.2.0'
+}
+```
+
+`~/.gradle/gradle.properties` に認証情報を設定:
+
+```properties
+gpr.user=YOUR_GITHUB_USERNAME
+gpr.key=YOUR_GITHUB_TOKEN
+```
+
+### Gradle (Kotlin DSL)
+
+`build.gradle.kts`:
+
+```kotlin
+repositories {
+    mavenCentral()
+    maven {
+        url = uri("https://maven.pkg.github.com/to0mi1/swuit")
+        credentials {
+            username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+            password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
+}
+
+dependencies {
+    implementation("org.to0mi1:swuit-core:0.2.0")
+}
+```
+
+### Maven
+
+`~/.m2/settings.xml` に認証情報を設定:
+
+```xml
+<settings>
+  <servers>
+    <server>
+      <id>github</id>
+      <username>YOUR_GITHUB_USERNAME</username>
+      <password>YOUR_GITHUB_TOKEN</password>
+    </server>
+  </servers>
+</settings>
+```
+
+`pom.xml`:
+
+```xml
+<repositories>
+    <repository>
+        <id>github</id>
+        <url>https://maven.pkg.github.com/to0mi1/swuit</url>
+    </repository>
+</repositories>
+
+<dependencies>
+    <dependency>
+        <groupId>org.to0mi1</groupId>
+        <artifactId>swuit-core</artifactId>
+        <version>0.2.0</version>
+    </dependency>
+</dependencies>
+```
+
+> **Note:** GitHub Token には `read:packages` スコープが必要です。
+> [Personal Access Token の作成方法](https://docs.github.com/ja/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+
+## 機能一覧
+
+### レイアウト
 
 | クラス | 元ネタ | 説明 |
 |---|---|---|
@@ -24,7 +108,7 @@ Android の `LinearLayout` / `RelativeLayout` や CSS の `Flexbox` / `Grid` に
 | `CssGridLayout` | CSS Grid | 行列テンプレートによるグリッド配置 |
 | `AspectRatioLayout` | CSS aspect-ratio | 子コンポーネントのアスペクト比を維持する |
 
-## コンポーネント一覧
+### コンポーネント
 
 | クラス | 元ネタ | 説明 |
 |---|---|---|
@@ -593,13 +677,28 @@ Android の `Gravity` に相当するビットフラグ定数。`LinearLayout` �
 
 ---
 
-## ビルド
+## 動作要件
+
+- Java 17 以上
+
+## 開発者向け
+
+### プロジェクト構成
+
+| モジュール | 説明 |
+|---|---|
+| `swuit-core` | レイアウト・コンポーネントライブラリ本体 |
+| `demo-common` | デモ共通のパネル生成ロジック |
+| `demo-swing` | 素の Swing によるデモアプリ |
+| `demo-flatlaf` | FlatLaf 適用のデモアプリ |
+
+### ビルド
 
 ```bash
 ./gradlew build
 ```
 
-## デモの実行
+### デモの実行
 
 ```bash
 # 素の Swing 版
@@ -608,7 +707,3 @@ Android の `Gravity` に相当するビットフラグ定数。`LinearLayout` �
 # FlatLaf 版
 ./gradlew :demo-flatlaf:run
 ```
-
-## 動作要件
-
-- Java 17 以上
