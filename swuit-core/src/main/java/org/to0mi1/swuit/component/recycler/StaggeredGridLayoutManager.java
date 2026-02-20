@@ -32,6 +32,9 @@ public class StaggeredGridLayoutManager extends RecyclerPane.LayoutManager {
     /** position → 配置された列インデックス */
     private final Map<Integer, Integer> columnAssignment = new HashMap<>();
 
+    /** onLayoutChildren で確定した合計サイズのキャッシュ（フィードバックループ防止） */
+    private Dimension cachedTotalSize;
+
     /** 指定列数、指定方向で生成する。 */
     public StaggeredGridLayoutManager(int spanCount, Orientation orientation) {
         if (spanCount < 1) {
@@ -119,6 +122,7 @@ public class StaggeredGridLayoutManager extends RecyclerPane.LayoutManager {
     public void onLayoutChildren(Recycler recycler, RecyclerPane.State state) {
         int itemCount = state.getItemCount();
         if (itemCount == 0) {
+            cachedTotalSize = new Dimension(0, 0);
             resetVisiblePositions();
             recycler.scrapAttachedViews();
             recycler.recycleScrap();
@@ -191,6 +195,11 @@ public class StaggeredGridLayoutManager extends RecyclerPane.LayoutManager {
                 break;
             }
         }
+
+        // 初回のみ確定サイズを計算してキャッシュ（フィードバックループ防止）
+        if (cachedTotalSize == null) {
+            cachedTotalSize = computeTotalSizeFromFullScan(itemCount, viewportWidth, 0);
+        }
     }
 
     private void layoutHorizontal(Recycler recycler, RecyclerPane.State state) {
@@ -244,6 +253,11 @@ public class StaggeredGridLayoutManager extends RecyclerPane.LayoutManager {
             if (allColumnsExceed(rowLefts, scrollOffset + viewportWidth)) {
                 break;
             }
+        }
+
+        // 初回のみ確定サイズを計算してキャッシュ（フィードバックループ防止）
+        if (cachedTotalSize == null) {
+            cachedTotalSize = computeTotalSizeFromFullScan(itemCount, 0, viewportHeight);
         }
     }
 
@@ -372,6 +386,7 @@ public class StaggeredGridLayoutManager extends RecyclerPane.LayoutManager {
         sizeCache.clear();
         estimatedItemSize = -1;
         columnAssignment.clear();
+        cachedTotalSize = null;
     }
 
     @Override
@@ -386,14 +401,22 @@ public class StaggeredGridLayoutManager extends RecyclerPane.LayoutManager {
 
     @Override
     public Dimension computeTotalSize(RecyclerPane.State state) {
+        if (cachedTotalSize != null) {
+            return cachedTotalSize;
+        }
         int itemCount = state.getItemCount();
         if (itemCount == 0) {
             return new Dimension(0, 0);
         }
+        return computeTotalSizeFromFullScan(itemCount, getWidth(), getHeight());
+    }
 
+    /**
+     * 全アイテムを走査して合計サイズを計算する。
+     * onLayoutChildren の末尾から呼ばれ、結果は cachedTotalSize に保存される。
+     */
+    private Dimension computeTotalSizeFromFullScan(int itemCount, int viewportWidth, int viewportHeight) {
         if (orientation == Orientation.VERTICAL) {
-            int viewportWidth = getWidth();
-
             int[] columnHeights = new int[spanCount];
             for (int pos = 0; pos < itemCount; pos++) {
                 int col = findShortestColumn(columnHeights);
@@ -408,8 +431,6 @@ public class StaggeredGridLayoutManager extends RecyclerPane.LayoutManager {
             }
             return new Dimension(viewportWidth, Math.max(0, maxHeight));
         } else {
-            int viewportHeight = getHeight();
-
             int[] rowWidths = new int[spanCount];
             for (int pos = 0; pos < itemCount; pos++) {
                 int row = findShortestColumn(rowWidths);

@@ -282,7 +282,7 @@ public final class RecyclerDemos {
         pane.setLayoutManager(new StaggeredGridLayoutManager(3, Orientation.VERTICAL)
                 .setMainAxisGap(4)
                 .setCrossAxisGap(4));
-        pane.setAdapter(new StaggeredAdapter(200));
+        pane.setAdapter(new StaggeredAdapter(1000));
 
         JScrollPane sp = new JScrollPane(pane);
         sp.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
