@@ -5,6 +5,7 @@ import org.to0mi1.swuit.layout.Orientation;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Random;
 import java.util.function.IntFunction;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -507,6 +508,146 @@ class StaggeredGridLayoutManagerTest {
                 "horizontal scrollToPosition(20) で item-20 が可視");
     }
 
+
+    // ========== アスペクト比混在テスト ==========
+
+    // 横長・正方形・縦長 (回転) のバリエーション — デモ (RecyclerDemos) と同じ構成
+    private static final int[] AR_W = {1, 4, 3, 3, 2, 16,  9, 16, 10};
+    private static final int[] AR_H = {1, 3, 4, 2, 3,  9, 16, 10, 16};
+    // 重み: 横長多め、正方形そこそこ、縦長少なめ (合計 100)
+    private static final int[] AR_WEIGHTS = {15, 20, 8, 15, 6, 18, 5, 10, 3};
+
+    /** 重み付きランダムでアスペクト比インデックスの配列を生成する。 */
+    static int[] buildAspectIndices(int count, long seed) {
+        int[] cumulative = new int[AR_WEIGHTS.length];
+        cumulative[0] = AR_WEIGHTS[0];
+        for (int i = 1; i < AR_WEIGHTS.length; i++) {
+            cumulative[i] = cumulative[i - 1] + AR_WEIGHTS[i];
+        }
+        int total = cumulative[cumulative.length - 1];
+        Random rng = new Random(seed);
+        int[] indices = new int[count];
+        for (int i = 0; i < count; i++) {
+            int r = rng.nextInt(total);
+            int idx = 0;
+            while (idx < cumulative.length - 1 && r >= cumulative[idx]) {
+                idx++;
+            }
+            indices[i] = idx;
+        }
+        return indices;
+    }
+
+    /**
+     * VERTICAL 用のアスペクト比テスト向けアダプターを生成する。
+     * 回転バリエーション含む 9 パターンを重み付きランダムで混在させる。
+     */
+    static CountingAdapter createAspectRatioAdapter(int itemCount, int columnWidth) {
+        int[] indices = buildAspectIndices(itemCount, 42);
+        return new CountingAdapter(itemCount, pos -> {
+            int idx = indices[pos];
+            int h = columnWidth * AR_H[idx] / AR_W[idx];
+            return new Dimension(columnWidth, h);
+        });
+    }
+
+    /**
+     * HORIZONTAL 用のアスペクト比テスト向けアダプターを生成する。
+     * W/H を入れ替えて幅方向のバリエーションとする。
+     */
+    static CountingAdapter createAspectRatioAdapterHorizontal(int itemCount, int rowHeight) {
+        int[] indices = buildAspectIndices(itemCount, 42);
+        return new CountingAdapter(itemCount, pos -> {
+            int idx = indices[pos];
+            // HORIZONTAL では主軸が幅なので W/H を入れ替える
+            int w = rowHeight * AR_W[idx] / AR_H[idx];
+            return new Dimension(w, rowHeight);
+        });
+    }
+
+    @Test
+    void mixedAspectRatio_totalSize_improves_afterScroll() {
+        int itemCount = 30;
+        // viewport 300x200, spanCount=3 → columnWidth=100
+        int columnWidth = 100;
+        CountingAdapter adapter = createAspectRatioAdapter(itemCount, columnWidth);
+        StaggeredGridLayoutManager lm = new StaggeredGridLayoutManager(3, Orientation.VERTICAL);
+        RecyclerPane pane = createPane(300, 200, lm, adapter);
+
+        RecyclerPane.State state = new RecyclerPane.State(itemCount);
+        Dimension sizeBeforeScroll = lm.computeTotalSize(state);
+
+        // 末尾付近までスクロールして実測値を増やす
+        simulateScroll(pane, 0, sizeBeforeScroll.height - 200);
+
+        Dimension sizeAfterScroll = lm.computeTotalSize(state);
+
+        // スクロール後は実測アイテム数が増え、totalSize が再計算されている
+        assertNotEquals(sizeBeforeScroll.height, sizeAfterScroll.height,
+                "スクロール後に totalSize が再計算される");
+    }
+
+    @Test
+    void mixedAspectRatio_scrollToEnd_noExcessGap() {
+        int itemCount = 30;
+        int columnWidth = 100;
+        CountingAdapter adapter = createAspectRatioAdapter(itemCount, columnWidth);
+        StaggeredGridLayoutManager lm = new StaggeredGridLayoutManager(3, Orientation.VERTICAL);
+        RecyclerPane pane = createPane(300, 200, lm, adapter);
+
+        // 全アイテムの理論上の totalHeight を手計算する
+        int[] indices = buildAspectIndices(itemCount, 42);
+        int[] columnHeights = new int[3];
+        for (int pos = 0; pos < itemCount; pos++) {
+            int col = 0;
+            for (int c = 1; c < 3; c++) {
+                if (columnHeights[c] < columnHeights[col]) col = c;
+            }
+            columnHeights[col] += columnWidth * AR_H[indices[pos]] / AR_W[indices[pos]];
+        }
+        int expectedMaxHeight = 0;
+        for (int h : columnHeights) {
+            expectedMaxHeight = Math.max(expectedMaxHeight, h);
+        }
+
+        // 末尾までスクロールして全アイテムを計測
+        RecyclerPane.State state = new RecyclerPane.State(itemCount);
+        for (int scrollY = 0; scrollY <= expectedMaxHeight; scrollY += 200) {
+            simulateScroll(pane, 0, scrollY);
+        }
+
+        Dimension totalSize = lm.computeTotalSize(state);
+
+        // totalSize と理論値の差が妥当であること
+        // 縦長アイテム (9:16 等) を含むため最大高さの基準を広めにとる
+        int maxItemHeight = columnWidth * 16 / 9;  // 9:16 → 177px
+        int diff = Math.abs(totalSize.height - expectedMaxHeight);
+        assertTrue(diff <= maxItemHeight,
+                "totalSize=" + totalSize.height + " vs expected=" + expectedMaxHeight
+                        + " の差(" + diff + ")が妥当");
+    }
+
+    @Test
+    void mixedAspectRatio_horizontal() {
+        int itemCount = 30;
+        // viewport 400x300, spanCount=3 → rowHeight=100
+        int rowHeight = 100;
+        CountingAdapter adapter = createAspectRatioAdapterHorizontal(itemCount, rowHeight);
+        StaggeredGridLayoutManager lm = new StaggeredGridLayoutManager(3, Orientation.HORIZONTAL);
+        RecyclerPane pane = createPane(400, 300, lm, adapter);
+
+        RecyclerPane.State state = new RecyclerPane.State(itemCount);
+        Dimension sizeBeforeScroll = lm.computeTotalSize(state);
+
+        // 右にスクロールして実測値を増やす
+        simulateScroll(pane, sizeBeforeScroll.width - 400, 0);
+
+        Dimension sizeAfterScroll = lm.computeTotalSize(state);
+
+        // スクロール後は実測アイテム数が増え、totalSize が再計算されている
+        assertNotEquals(sizeBeforeScroll.width, sizeAfterScroll.width,
+                "HORIZONTAL: スクロール後に totalSize が再計算される");
+    }
 
     @Test
     void computeTotalSize_vertical_withGap_correct() {

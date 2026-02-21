@@ -11,6 +11,31 @@ import java.util.Map;
  * 不規則グリッド配置のレイアウトマネージャー。
  * <p>
  * 最も短い列にアイテムを追加する方式で、Pinterest 風の互い違いレイアウトを実現する。
+ *
+ * <h2>サイズ推定とキャッシュの仕組み</h2>
+ * <p>
+ * RecyclerPane は可視領域のアイテムしか実体化しないため、非可視アイテムの主軸サイズは不明である。
+ * しかしスクロールバーの長さを決めるには全アイテムの合計サイズが必要になる。
+ * この矛盾を解決するため、本クラスは以下の 2 段階の仕組みを持つ。
+ *
+ * <ol>
+ *   <li><b>アイテム単位のサイズ推定</b> —
+ *       一度でも可視領域に入って実体化されたアイテムのサイズを {@link #sizeCache} に記録する。
+ *       未計測アイテムには、計測済みアイテムの算術平均 ({@link #totalMeasuredSize} / 計測個数) を
+ *       推定値として使う。</li>
+ *   <li><b>合計サイズの段階的改善</b> —
+ *       スクロールで新たなアイテムが計測されるたびに {@link #cachedTotalSize} を再計算する。
+ *       再計算のトリガーには {@link #lastCacheSizeOnCompute} を使い、
+ *       {@code sizeCache} が前回計算時より成長した場合にのみ再計算することで
+ *       不要な計算とフィードバックループを防ぐ。</li>
+ * </ol>
+ *
+ * <h2>データ変更時の挙動</h2>
+ * <p>
+ * {@code Adapter.notifyItemChanged()} 等のデータ変更通知はすべて {@link #onDataChanged()} →
+ * {@link #clearSizeCache()} を通じてキャッシュを全クリアする。
+ * StaggeredGrid は「最短列に順番に配置」する方式のため、途中のアイテムのサイズ変更が
+ * 後続全アイテムの列割り当てに影響し得る。このため部分無効化ではなく全クリアが正しい。
  */
 public class StaggeredGridLayoutManager extends RecyclerPane.LayoutManager {
 
@@ -25,15 +50,42 @@ public class StaggeredGridLayoutManager extends RecyclerPane.LayoutManager {
     private int crossAxisGap;
     private int gapStrategy = GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS;
 
-    /** position → 計測済みサイズ（主軸方向）のキャッシュ */
+    /**
+     * position → 計測済みの主軸サイズ (VERTICAL なら高さ、HORIZONTAL なら幅) のキャッシュ。
+     * アイテムが可視領域に入り実体化されたときに記録される。
+     */
     private final Map<Integer, Integer> sizeCache = new HashMap<>();
-    private int estimatedItemSize = -1;
 
-    /** position → 配置された列インデックス */
+    /**
+     * {@link #sizeCache} に記録された全サイズの合計。
+     * 未計測アイテムの推定値は {@code totalMeasuredSize / sizeCache.size()} (算術平均) で求める。
+     * <p>
+     * 算術平均を使う理由: アイテムのサイズ分布に偏りがあっても、
+     * 計測数が増えるほど真の平均に収束し、合計サイズの推定精度が安定するため。
+     */
+    private long totalMeasuredSize;
+
+    /** position → 配置された列 (HORIZONTAL の場合は行) インデックス。 */
     private final Map<Integer, Integer> columnAssignment = new HashMap<>();
 
-    /** onLayoutChildren で確定した合計サイズのキャッシュ（フィードバックループ防止） */
+    /**
+     * {@link #onLayoutChildren} で計算された合計サイズのキャッシュ。
+     * <p>
+     * {@code computeTotalSize()} が呼ばれるたびに再計算すると、推定値の変化 → 合計サイズ変化 →
+     * JScrollPane がビューポートを再レイアウト → {@code onLayoutChildren} が再呼出し…
+     * という無限ループ (フィードバックループ) に陥る。これを防ぐためにキャッシュする。
+     * <p>
+     * ただしスクロールで新たなアイテムが計測されたら精度向上のため再計算が必要。
+     * その判定には {@link #lastCacheSizeOnCompute} を使う。
+     */
     private Dimension cachedTotalSize;
+
+    /**
+     * {@link #cachedTotalSize} を最後に計算した時点の {@code sizeCache.size()}。
+     * スクロールで新たなアイテムが計測されると {@code sizeCache.size()} がこの値を超えるので、
+     * それを再計算のトリガーとして使う。
+     */
+    private int lastCacheSizeOnCompute;
 
     /** 指定列数、指定方向で生成する。 */
     public StaggeredGridLayoutManager(int spanCount, Orientation orientation) {
@@ -171,10 +223,17 @@ public class StaggeredGridLayoutManager extends RecyclerPane.LayoutManager {
                     && (y < scrollOffset + viewportHeight);
 
             if (isVisible) {
+                // 可視アイテムは実体化して実際のサイズを計測する
                 RecyclerPane.ViewHolder holder = recycler.obtainViewForPosition(pos);
                 int itemHeight = holder.itemView.getPreferredSize().height;
+
+                // 初回計測のみ totalMeasuredSize に加算する。
+                // スクロールで再表示されたアイテムを二重加算すると
+                // 算術平均 (totalMeasuredSize / sizeCache.size()) が不正になるため。
+                if (!sizeCache.containsKey(pos)) {
+                    updateEstimatedSize(itemHeight);
+                }
                 sizeCache.put(pos, itemHeight);
-                updateEstimatedSize(itemHeight);
 
                 int itemTop = y + offsets.top;
                 layoutChild(holder,
@@ -185,20 +244,25 @@ public class StaggeredGridLayoutManager extends RecyclerPane.LayoutManager {
 
                 updateVisiblePositions(pos, itemTop, itemTop + itemHeight, scrollOffset, scrollOffset + viewportHeight);
 
+                // 実測値で列の高さを進める
                 columnTops[col] = y + itemHeight + offsets.top + offsets.bottom + mainAxisGap;
             } else {
+                // 非可視アイテムはキャッシュ済みサイズまたは推定値で列の高さを進める
                 columnTops[col] = y + itemSize + offsets.top + offsets.bottom + mainAxisGap;
             }
 
-            // 全列がビューポートの下を超えたら終了
+            // 全列がビューポートの下を超えたら、これ以降のアイテムは確実に不可視なので終了
             if (allColumnsExceed(columnTops, scrollOffset + viewportHeight)) {
                 break;
             }
         }
 
-        // 初回のみ確定サイズを計算してキャッシュ（フィードバックループ防止）
-        if (cachedTotalSize == null) {
+        // sizeCache が前回の計算時より成長していれば cachedTotalSize を再計算する。
+        // スクロールで新たなアイテムが計測されると推定精度が上がるため、
+        // その改善を合計サイズに反映してスクロールバーの精度を向上させる。
+        if (cachedTotalSize == null || sizeCache.size() > lastCacheSizeOnCompute) {
             cachedTotalSize = computeTotalSizeFromFullScan(itemCount, viewportWidth, 0);
+            lastCacheSizeOnCompute = sizeCache.size();
         }
     }
 
@@ -233,8 +297,12 @@ public class StaggeredGridLayoutManager extends RecyclerPane.LayoutManager {
             if (isVisible) {
                 RecyclerPane.ViewHolder holder = recycler.obtainViewForPosition(pos);
                 int itemWidth = holder.itemView.getPreferredSize().width;
+
+                // layoutVertical と同じく、初回計測のみ totalMeasuredSize に加算
+                if (!sizeCache.containsKey(pos)) {
+                    updateEstimatedSize(itemWidth);
+                }
                 sizeCache.put(pos, itemWidth);
-                updateEstimatedSize(itemWidth);
 
                 int itemLeft = x + offsets.left;
                 layoutChild(holder,
@@ -255,9 +323,10 @@ public class StaggeredGridLayoutManager extends RecyclerPane.LayoutManager {
             }
         }
 
-        // 初回のみ確定サイズを計算してキャッシュ（フィードバックループ防止）
-        if (cachedTotalSize == null) {
+        // layoutVertical と同じく、sizeCache 成長時に合計サイズを再計算
+        if (cachedTotalSize == null || sizeCache.size() > lastCacheSizeOnCompute) {
             cachedTotalSize = computeTotalSizeFromFullScan(itemCount, 0, viewportHeight);
+            lastCacheSizeOnCompute = sizeCache.size();
         }
     }
 
@@ -361,32 +430,49 @@ public class StaggeredGridLayoutManager extends RecyclerPane.LayoutManager {
         return true;
     }
 
+    /**
+     * 指定 position のアイテムの主軸サイズを返す。
+     * 計測済みならキャッシュ値、未計測なら計測済みアイテムの算術平均を推定値として返す。
+     * まだ何も計測されていない初期状態ではフォールバック値 30 を返す。
+     */
     private int getCachedOrEstimatedSize(int position) {
         Integer cached = sizeCache.get(position);
         if (cached != null) {
             return cached;
         }
-        return estimatedItemSize > 0 ? estimatedItemSize : 30;
+        int cacheCount = sizeCache.size();
+        return cacheCount > 0 ? (int) (totalMeasuredSize / cacheCount) : 30;
     }
 
+    /**
+     * 新たに計測されたサイズを {@link #totalMeasuredSize} に加算する。
+     * 呼び出し元で {@code sizeCache.containsKey(pos)} を確認済みであること。
+     */
     private void updateEstimatedSize(int measuredSize) {
-        if (estimatedItemSize < 0) {
-            estimatedItemSize = measuredSize;
-        } else {
-            estimatedItemSize = (estimatedItemSize + measuredSize) / 2;
-        }
+        totalMeasuredSize += measuredSize;
     }
 
+    /**
+     * データ変更時に呼ばれる。{@code Adapter.notifyDataSetChanged()},
+     * {@code notifyItemChanged()}, {@code notifyItemInserted()},
+     * {@code notifyItemRemoved()} のいずれも本メソッドを経由する。
+     * <p>
+     * StaggeredGrid は「最短列に順に配置」する方式のため、途中のアイテムのサイズ変更が
+     * 後続全アイテムの列割り当てに波及し得る。
+     * このため部分無効化ではなく全キャッシュのクリアが必要。
+     */
     @Override
     protected void onDataChanged() {
         clearSizeCache();
     }
 
+    /** サイズキャッシュ・推定値・列割り当て・合計サイズキャッシュを全てリセットする。 */
     private void clearSizeCache() {
         sizeCache.clear();
-        estimatedItemSize = -1;
+        totalMeasuredSize = 0;
         columnAssignment.clear();
         cachedTotalSize = null;
+        lastCacheSizeOnCompute = 0;
     }
 
     @Override
@@ -399,6 +485,10 @@ public class StaggeredGridLayoutManager extends RecyclerPane.LayoutManager {
         return orientation == Orientation.HORIZONTAL;
     }
 
+    /**
+     * JScrollPane がスクロール範囲を決定するために呼ぶメソッド。
+     * {@link #cachedTotalSize} がある場合はそれを返し、無ければフルスキャンで計算する。
+     */
     @Override
     public Dimension computeTotalSize(RecyclerPane.State state) {
         if (cachedTotalSize != null) {
@@ -413,7 +503,11 @@ public class StaggeredGridLayoutManager extends RecyclerPane.LayoutManager {
 
     /**
      * 全アイテムを走査して合計サイズを計算する。
-     * onLayoutChildren の末尾から呼ばれ、結果は cachedTotalSize に保存される。
+     * 各アイテムのサイズは {@link #getCachedOrEstimatedSize} で取得するため、
+     * 計測済みアイテムは実測値、未計測アイテムは算術平均の推定値が使われる。
+     * <p>
+     * {@link #layoutVertical} / {@link #layoutHorizontal} の末尾から呼ばれ、
+     * 結果は {@link #cachedTotalSize} に保存される。
      */
     private Dimension computeTotalSizeFromFullScan(int itemCount, int viewportWidth, int viewportHeight) {
         if (orientation == Orientation.VERTICAL) {

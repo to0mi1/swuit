@@ -200,17 +200,52 @@ public final class RecyclerDemos {
         }
     }
 
-    /** Staggered 用 Adapter（高さランダム） */
+    /**
+     * Staggered 用 Adapter（アスペクト比ベースの高さ）。
+     * <p>
+     * 横長・正方形・縦長を重み付きランダムで混在させ、
+     * 画像ギャラリーに近いバリエーションを再現する。
+     */
     static class StaggeredAdapter extends RecyclerPane.Adapter<GridViewHolder> {
+        // 横長 (landscape) + 正方形 + 縦長 (portrait) のバリエーション
+        private static final String[] ASPECT_LABELS = {
+                "1:1",          // 正方形
+                "4:3", "3:4",   // 標準写真 + 回転
+                "3:2", "2:3",   // 一眼写真 + 回転
+                "16:9", "9:16", // ワイド映像 + 回転
+                "16:10", "10:16"// PC画面比 + 回転
+        };
+        private static final int[] W_RATIOS = {1, 4, 3, 3, 2, 16,  9, 16, 10};
+        private static final int[] H_RATIOS = {1, 3, 4, 2, 3,  9, 16, 10, 16};
+        // 重み: 横長多め、正方形そこそこ、縦長少なめ (合計 100)
+        private static final int[] WEIGHTS  = {15, 20, 8, 15, 6, 18, 5, 10, 3};
+
+        /** 高さ計算の基準幅 (3列・gap 4px・viewport 約 760px 想定) */
+        private static final int REF_WIDTH = 250;
+
         final int count;
-        final int[] heights;
+        /** position ごとの ASPECT_LABELS インデックス (重み付きランダムで事前生成) */
+        final int[] aspectIndices;
 
         StaggeredAdapter(int count) {
             this.count = count;
+            // 重みの累積和を構築
+            int[] cumulative = new int[WEIGHTS.length];
+            cumulative[0] = WEIGHTS[0];
+            for (int i = 1; i < WEIGHTS.length; i++) {
+                cumulative[i] = cumulative[i - 1] + WEIGHTS[i];
+            }
+            int totalWeight = cumulative[cumulative.length - 1];
+            // シード固定で再現可能なランダム列を生成
             Random rng = new Random(42);
-            heights = new int[count];
+            aspectIndices = new int[count];
             for (int i = 0; i < count; i++) {
-                heights[i] = 60 + rng.nextInt(120);
+                int r = rng.nextInt(totalWeight);
+                int idx = 0;
+                while (idx < cumulative.length - 1 && r >= cumulative[idx]) {
+                    idx++;
+                }
+                aspectIndices[i] = idx;
             }
         }
 
@@ -228,9 +263,11 @@ public final class RecyclerDemos {
 
         @Override
         public void onBindViewHolder(GridViewHolder holder, int position) {
-            holder.label.setText(String.valueOf(position));
+            int idx = aspectIndices[position];
+            holder.label.setText(position + " (" + ASPECT_LABELS[idx] + ")");
             holder.label.setBackground(COLORS[position % COLORS.length]);
-            holder.itemView.setPreferredSize(new Dimension(0, heights[position]));
+            int h = REF_WIDTH * H_RATIOS[idx] / W_RATIOS[idx];
+            holder.itemView.setPreferredSize(new Dimension(0, h));
         }
 
         @Override
