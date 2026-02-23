@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.to0mi1.swuit.layout.Gravity;
 
@@ -60,6 +61,36 @@ public class RelativeLayout implements LayoutManager2 {
 
     public void setGravity(int gravity) {
         this.gravity = gravity;
+    }
+
+    // --- 制約の取得・更新 ---
+
+    /**
+     * 指定コンポーネントに設定された制約のコピーを返す。
+     *
+     * @param comp 対象コンポーネント
+     * @return 制約のコピー。コンポーネントが未登録の場合は {@code null}
+     */
+    public RelativeConstraints getConstraints(Component comp) {
+        RelativeConstraints rc = constraintsMap.get(comp);
+        return rc != null ? rc.clone() : null;
+    }
+
+    /**
+     * 指定コンポーネントの制約を更新する。
+     * 変更を反映するには、コンテナの {@code revalidate()} / {@code doLayout()} を呼ぶ必要がある。
+     *
+     * @param comp        対象コンポーネント（既にこのレイアウトに追加済みであること）
+     * @param constraints 新しい制約
+     * @throws IllegalArgumentException comp がこのレイアウトに未登録の場合
+     */
+    public void setConstraints(Component comp, RelativeConstraints constraints) {
+        Objects.requireNonNull(comp, "comp");
+        Objects.requireNonNull(constraints, "constraints");
+        if (!constraintsMap.containsKey(comp)) {
+            throw new IllegalArgumentException("Component is not managed by this layout");
+        }
+        constraintsMap.put(comp, constraints.clone());
     }
 
     // --- LayoutManager2 ---
@@ -146,7 +177,7 @@ public class RelativeLayout implements LayoutManager2 {
             int maxBottom = 0;
             for (Component c : visible) {
                 ChildBounds cb = boundsMap.get(c);
-                RelativeConstraints rc = getConstraints(c);
+                RelativeConstraints rc = getConstraintsInternal(c);
                 Insets m = rc.margin;
                 maxRight = Math.max(maxRight, cb.right + m.right);
                 maxBottom = Math.max(maxBottom, cb.bottom + m.bottom);
@@ -195,7 +226,7 @@ public class RelativeLayout implements LayoutManager2 {
     private void resolveHorizontal(List<Component> order, Map<Component, ChildBounds> boundsMap,
                                     int parentLeft, int parentRight, boolean minimum, boolean sizeMode) {
         for (Component child : order) {
-            RelativeConstraints rc = getConstraints(child);
+            RelativeConstraints rc = getConstraintsInternal(child);
             ChildBounds cb = boundsMap.get(child);
             Insets m = rc.margin;
 
@@ -212,7 +243,7 @@ public class RelativeLayout implements LayoutManager2 {
                 Component anchor = (Component) rc.getRule(RelativeConstraints.RIGHT_OF);
                 ChildBounds ab = boundsMap.get(anchor);
                 if (ab != null) {
-                    Insets am = getConstraints(anchor).margin;
+                    Insets am = getConstraintsInternal(anchor).margin;
                     left = ab.right + am.right + m.left;
                 }
             }
@@ -232,7 +263,7 @@ public class RelativeLayout implements LayoutManager2 {
                 Component anchor = (Component) rc.getRule(RelativeConstraints.LEFT_OF);
                 ChildBounds ab = boundsMap.get(anchor);
                 if (ab != null) {
-                    Insets am = getConstraints(anchor).margin;
+                    Insets am = getConstraintsInternal(anchor).margin;
                     right = ab.left - am.left - m.right;
                 }
             }
@@ -274,7 +305,7 @@ public class RelativeLayout implements LayoutManager2 {
     private void resolveVertical(List<Component> order, Map<Component, ChildBounds> boundsMap,
                                   int parentTop, int parentBottom, boolean minimum, boolean sizeMode) {
         for (Component child : order) {
-            RelativeConstraints rc = getConstraints(child);
+            RelativeConstraints rc = getConstraintsInternal(child);
             ChildBounds cb = boundsMap.get(child);
             Insets m = rc.margin;
 
@@ -291,7 +322,7 @@ public class RelativeLayout implements LayoutManager2 {
                 Component anchor = (Component) rc.getRule(RelativeConstraints.BELOW);
                 ChildBounds ab = boundsMap.get(anchor);
                 if (ab != null) {
-                    Insets am = getConstraints(anchor).margin;
+                    Insets am = getConstraintsInternal(anchor).margin;
                     top = ab.bottom + am.bottom + m.top;
                 }
             }
@@ -311,7 +342,7 @@ public class RelativeLayout implements LayoutManager2 {
                 Component anchor = (Component) rc.getRule(RelativeConstraints.ABOVE);
                 ChildBounds ab = boundsMap.get(anchor);
                 if (ab != null) {
-                    Insets am = getConstraints(anchor).margin;
+                    Insets am = getConstraintsInternal(anchor).margin;
                     bottom = ab.top - am.top - m.bottom;
                 }
             }
@@ -361,7 +392,7 @@ public class RelativeLayout implements LayoutManager2 {
 
         // 依存辺を構築
         for (Component c : visible) {
-            RelativeConstraints rc = getConstraints(c);
+            RelativeConstraints rc = getConstraintsInternal(c);
             int[] deps = horizontal
                     ? new int[]{RelativeConstraints.LEFT_OF, RelativeConstraints.RIGHT_OF,
                                 RelativeConstraints.ALIGN_LEFT, RelativeConstraints.ALIGN_RIGHT}
@@ -422,7 +453,7 @@ public class RelativeLayout implements LayoutManager2 {
         return visible;
     }
 
-    private RelativeConstraints getConstraints(Component comp) {
+    private RelativeConstraints getConstraintsInternal(Component comp) {
         RelativeConstraints rc = constraintsMap.get(comp);
         return rc != null ? rc : new RelativeConstraints();
     }
