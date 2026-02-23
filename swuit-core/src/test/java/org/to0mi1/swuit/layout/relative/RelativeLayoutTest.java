@@ -450,4 +450,57 @@ class RelativeLayoutTest {
 
         assertEquals(new Rectangle(20, 10, 100, 50), boundsOf(a));
     }
+
+    // === setConstraints / getConstraints ===
+
+    @Test
+    void setConstraints_updatesLayout() {
+        RelativeLayout layout = new RelativeLayout();
+        JPanel panel = createContainer(layout, 400, 300);
+        Component a = fixedSize(100, 50);
+        panel.add(a, new RelativeConstraints().alignParentLeft().alignParentTop());
+        panel.doLayout();
+        assertEquals(new Rectangle(0, 0, 100, 50), boundsOf(a));
+
+        // 制約を変更して再レイアウト
+        layout.setConstraints(a, new RelativeConstraints()
+                .alignParentRight().alignParentBottom());
+        panel.doLayout();
+        assertEquals(new Rectangle(300, 250, 100, 50), boundsOf(a));
+    }
+
+    @Test
+    void getConstraints_returnsClone() {
+        RelativeLayout layout = new RelativeLayout();
+        JPanel panel = createContainer(layout, 400, 300);
+        Component a = fixedSize(100, 50);
+        panel.add(a, new RelativeConstraints()
+                .alignParentLeft().alignParentTop().margin(10, 20, 0, 0));
+        panel.doLayout();
+        assertEquals(new Rectangle(20, 10, 100, 50), boundsOf(a));
+
+        // 取得した制約を変更しても内部状態に影響しない
+        RelativeConstraints got = layout.getConstraints(a);
+        assertNotNull(got);
+        got.margin(99, 99, 99, 99);
+        panel.doLayout();
+        assertEquals(new Rectangle(20, 10, 100, 50), boundsOf(a));
+    }
+
+    @Test
+    void setConstraints_unknownComponent_throws() {
+        RelativeLayout layout = new RelativeLayout();
+        createContainer(layout, 400, 300);
+        Component unknown = fixedSize(100, 50);
+        assertThrows(IllegalArgumentException.class,
+                () -> layout.setConstraints(unknown, new RelativeConstraints()));
+    }
+
+    @Test
+    void getConstraints_unknownComponent_returnsNull() {
+        RelativeLayout layout = new RelativeLayout();
+        createContainer(layout, 400, 300);
+        Component unknown = fixedSize(100, 50);
+        assertNull(layout.getConstraints(unknown));
+    }
 }

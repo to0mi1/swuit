@@ -52,6 +52,7 @@ public class ImageView extends JComponent {
 
     public void setObjectFit(ObjectFit objectFit) {
         this.objectFit = Objects.requireNonNull(objectFit, "objectFit");
+        invalidate();
         repaint();
     }
 
@@ -71,7 +72,7 @@ public class ImageView extends JComponent {
         if (isPreferredSizeSet()) {
             return super.getPreferredSize();
         }
-        if (image != null) {
+        if (image != null && (objectFit == ObjectFit.NONE || objectFit == ObjectFit.SCALE_DOWN)) {
             int w = image.getWidth(this);
             int h = image.getHeight(this);
             if (w > 0 && h > 0) {
@@ -81,24 +82,32 @@ public class ImageView extends JComponent {
         return new Dimension(0, 0);
     }
 
-    // === 描画 ===
+    // === 画像描画領域 ===
 
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
+    /**
+     * 現在の {@link ObjectFit} と {@link ObjectPosition} に基づいて、
+     * 実際に画像が描画される領域を返す。
+     *
+     * <p>コンポーネントの {@code bounds} とは異なり、{@code ObjectFit.CONTAIN} 等では
+     * レターボックス部分を除いた実描画領域のみを返す。
+     * バッジ等のオーバーレイを画像上に配置する際の位置決めに利用できる。</p>
+     *
+     * @return 画像描画領域（コンポーネント座標系）。画像未設定またはコンポーネントサイズが 0 の場合は {@code null}
+     */
+    public Rectangle getImageBounds() {
         if (image == null) {
-            return;
+            return null;
         }
         int imgW = image.getWidth(this);
         int imgH = image.getHeight(this);
         if (imgW <= 0 || imgH <= 0) {
-            return;
+            return null;
         }
 
         int cW = getWidth();
         int cH = getHeight();
         if (cW <= 0 || cH <= 0) {
-            return;
+            return null;
         }
 
         Dimension drawSize = objectFit.computeDrawSize(cW, cH, imgW, imgH);
@@ -108,14 +117,33 @@ public class ImageView extends JComponent {
         int offsetX = objectPosition.computeOffset(cW, drawW, true);
         int offsetY = objectPosition.computeOffset(cH, drawH, false);
 
-        // 描画矩形とコンテナの交差を計算（クリッピング）
         Rectangle drawRect = new Rectangle(offsetX, offsetY, drawW, drawH);
         Rectangle containerRect = new Rectangle(0, 0, cW, cH);
         Rectangle visible = drawRect.intersection(containerRect);
 
-        if (visible.isEmpty()) {
+        return visible.isEmpty() ? null : visible;
+    }
+
+    // === 描画 ===
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        Rectangle visible = getImageBounds();
+        if (visible == null) {
             return;
         }
+
+        int imgW = image.getWidth(this);
+        int imgH = image.getHeight(this);
+
+        Dimension drawSize = objectFit.computeDrawSize(getWidth(), getHeight(), imgW, imgH);
+        int drawW = drawSize.width;
+        int drawH = drawSize.height;
+
+        int offsetX = objectPosition.computeOffset(getWidth(), drawW, true);
+        int offsetY = objectPosition.computeOffset(getHeight(), drawH, false);
 
         // 可視領域に対応するソース矩形を計算
         double scaleX = (double) imgW / drawW;
