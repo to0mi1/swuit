@@ -4,13 +4,18 @@ def gitVersion = {
         proc.waitFor()
         if (proc.exitValue() != 0) return '0.0.0-SNAPSHOT'
         def describe = proc.text.trim()
-        def match = (describe =~ /^v(\d+)\.(\d+)\.(\d+)(-(\d+)-g[0-9a-f]+)?$/)
+        def match = (describe =~ /^v(\d+)\.(\d+)\.(\d+)(-([a-zA-Z][a-zA-Z0-9.]*?))?(-(\d+)-g[0-9a-f]+)?$/)
         if (match.matches()) {
             def major = match.group(1)
             def minor = match.group(2)
             def patch = match.group(3) as int
-            if (match.group(4) != null) {
+            def preRelease = match.group(5) // e.g. "beta.1"
+            if (match.group(6) != null) {
+                // タグからコミットが進んでいる場合は SNAPSHOT
                 return "${major}.${minor}.${patch + 1}-SNAPSHOT"
+            }
+            if (preRelease != null) {
+                return "${major}.${minor}.${patch}-${preRelease}"
             }
             return "${major}.${minor}.${patch}"
         }
