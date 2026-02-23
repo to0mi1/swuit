@@ -87,8 +87,9 @@ public class AspectRatioLayout implements LayoutManager2 {
             } else {
                 width = 0;
             }
-            // 子が固有サイズを持たない場合、前回レイアウト時の幅を使用
-            if (width <= 0 && lastLayoutWidth > 0) {
+            // レイアウト済みの実幅がある場合はそちらを優先する。
+            // 子の preferred width が小さい場合（例: バッジのみ）でも実幅に基づいて高さを算出する。
+            if (lastLayoutWidth > 0) {
                 width = lastLayoutWidth;
             }
             width = Math.max(0, width);
