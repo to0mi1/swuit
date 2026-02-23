@@ -1,5 +1,7 @@
 package org.to0mi1.swuit.layout.aspectratio;
 
+import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -21,6 +23,7 @@ import java.awt.LayoutManager2;
 public class AspectRatioLayout implements LayoutManager2 {
 
     private final double ratio;
+    private int lastLayoutWidth = -1;
 
     /**
      * @param ratio アスペクト比 (幅 / 高さ)。例: 16.0/9.0
@@ -84,6 +87,11 @@ public class AspectRatioLayout implements LayoutManager2 {
             } else {
                 width = 0;
             }
+            // 子が固有サイズを持たない場合、前回レイアウト時の幅を使用
+            if (width <= 0 && lastLayoutWidth > 0) {
+                width = lastLayoutWidth;
+            }
+            width = Math.max(0, width);
             int contentWidth = width + insets.left + insets.right;
             int contentHeight = (int) Math.round(width / ratio) + insets.top + insets.bottom;
             return new Dimension(contentWidth, contentHeight);
@@ -120,6 +128,18 @@ public class AspectRatioLayout implements LayoutManager2 {
             Component child = getFirstVisibleChild(parent);
             if (child != null) {
                 child.setBounds(x, y, Math.max(0, w), Math.max(0, h));
+            }
+
+            // 幅が確定したらキャッシュし、次回 preferredLayoutSize で利用する。
+            // 幅が変わった場合は再レイアウトを要求して正しい高さを反映させる。
+            if (w > 0 && w != lastLayoutWidth) {
+                lastLayoutWidth = w;
+                if (parent instanceof JComponent jc) {
+                    SwingUtilities.invokeLater(() -> {
+                        jc.invalidate();
+                        jc.revalidate();
+                    });
+                }
             }
         }
     }
