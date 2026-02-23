@@ -82,8 +82,43 @@ class ImageViewTest {
     // === preferredSize ===
 
     @Test
-    void preferredSize_withImage_returnsImageSize() {
+    void preferredSize_defaultFill_returnsZero() {
         ImageView view = new ImageView(createTestImage(640, 480));
+        assertEquals(new Dimension(0, 0), view.getPreferredSize());
+    }
+
+    @Test
+    void preferredSize_fill_returnsZero() {
+        ImageView view = new ImageView(createTestImage(640, 480));
+        view.setObjectFit(ObjectFit.FILL);
+        assertEquals(new Dimension(0, 0), view.getPreferredSize());
+    }
+
+    @Test
+    void preferredSize_contain_returnsZero() {
+        ImageView view = new ImageView(createTestImage(640, 480));
+        view.setObjectFit(ObjectFit.CONTAIN);
+        assertEquals(new Dimension(0, 0), view.getPreferredSize());
+    }
+
+    @Test
+    void preferredSize_cover_returnsZero() {
+        ImageView view = new ImageView(createTestImage(640, 480));
+        view.setObjectFit(ObjectFit.COVER);
+        assertEquals(new Dimension(0, 0), view.getPreferredSize());
+    }
+
+    @Test
+    void preferredSize_none_returnsImageSize() {
+        ImageView view = new ImageView(createTestImage(640, 480));
+        view.setObjectFit(ObjectFit.NONE);
+        assertEquals(new Dimension(640, 480), view.getPreferredSize());
+    }
+
+    @Test
+    void preferredSize_scaleDown_returnsImageSize() {
+        ImageView view = new ImageView(createTestImage(640, 480));
+        view.setObjectFit(ObjectFit.SCALE_DOWN);
         assertEquals(new Dimension(640, 480), view.getPreferredSize());
     }
 

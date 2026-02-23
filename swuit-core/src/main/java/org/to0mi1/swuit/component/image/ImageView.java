@@ -52,6 +52,7 @@ public class ImageView extends JComponent {
 
     public void setObjectFit(ObjectFit objectFit) {
         this.objectFit = Objects.requireNonNull(objectFit, "objectFit");
+        invalidate();
         repaint();
     }
 
@@ -71,7 +72,7 @@ public class ImageView extends JComponent {
         if (isPreferredSizeSet()) {
             return super.getPreferredSize();
         }
-        if (image != null) {
+        if (image != null && (objectFit == ObjectFit.NONE || objectFit == ObjectFit.SCALE_DOWN)) {
             int w = image.getWidth(this);
             int h = image.getHeight(this);
             if (w > 0 && h > 0) {
