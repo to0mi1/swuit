@@ -3,6 +3,8 @@ package org.to0mi1.swuit.component.autocomplete;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.InputMethodEvent;
+import java.awt.event.InputMethodListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -72,6 +74,8 @@ public class AutoCompleteComboBox<E> extends JComboBox<E> {
     private boolean navigating;
     /** Backspace/Delete 後のインライン補完抑制 */
     private boolean suppressInlineCompletion;
+    /** IME で変換中（未確定テキストあり）か */
+    private boolean composing;
     /** invokeLater で遅延実行されるテキスト変更処理の世代番号 */
     private int textChangeGeneration;
 
@@ -80,6 +84,7 @@ public class AutoCompleteComboBox<E> extends JComboBox<E> {
     private transient DocumentListener documentListener;
     private transient KeyListener keyListener;
     private transient FocusListener autoCompleteFocusListener;
+    private transient InputMethodListener inputMethodListener;
 
     // === コンストラクタ ===
 
@@ -388,6 +393,25 @@ public class AutoCompleteComboBox<E> extends JComboBox<E> {
             }
         };
         editor.addFocusListener(autoCompleteFocusListener);
+
+        inputMethodListener = new InputMethodListener() {
+            @Override
+            public void inputMethodTextChanged(InputMethodEvent event) {
+                var iter = event.getText();
+                if (iter != null) {
+                    int total = iter.getEndIndex() - iter.getBeginIndex();
+                    composing = event.getCommittedCharacterCount() < total;
+                } else {
+                    composing = false;
+                }
+            }
+
+            @Override
+            public void caretPositionChanged(InputMethodEvent event) {
+                // 不要
+            }
+        };
+        editor.addInputMethodListener(inputMethodListener);
     }
 
     private void uninstallAutoComplete() {
@@ -410,6 +434,11 @@ public class AutoCompleteComboBox<E> extends JComboBox<E> {
             editor.removeFocusListener(autoCompleteFocusListener);
             autoCompleteFocusListener = null;
         }
+        if (inputMethodListener != null) {
+            editor.removeInputMethodListener(inputMethodListener);
+            inputMethodListener = null;
+        }
+        composing = false;
     }
 
     private JTextComponent getEditorTextComponent() {
@@ -442,7 +471,7 @@ public class AutoCompleteComboBox<E> extends JComboBox<E> {
         }
         int gen = ++textChangeGeneration;
         SwingUtilities.invokeLater(() -> {
-            if (gen == textChangeGeneration) {
+            if (gen == textChangeGeneration && !composing) {
                 onTextChanged();
             }
         });
