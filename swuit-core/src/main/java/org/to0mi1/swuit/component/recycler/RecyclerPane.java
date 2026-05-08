@@ -122,6 +122,42 @@ public class RecyclerPane extends JComponent implements Scrollable {
         repaint();
     }
 
+    /**
+     * 指定 adapter position に紐づく、現在表示中の ViewHolder を返す。
+     * 該当 position が表示されていない (Cache や Pool に居る、または範囲外) 場合は {@code null}。
+     */
+    public ViewHolder findViewHolderForAdapterPosition(int position) {
+        return recycler.findAttachedHolder(position);
+    }
+
+    /**
+     * 単一 position の差分更新を行う。
+     * 表示中ホルダーがあれば即座に rebind し、Cache 内エントリは破棄する。
+     * preferredSize が変化した場合のみ全体レイアウトを再要求する。
+     */
+    @SuppressWarnings("unchecked")
+    void onItemChanged(int position) {
+        if (adapter == null) return;
+        if (position < 0 || position >= adapter.getItemCount()) return;
+
+        ViewHolder attached = recycler.findAttachedHolder(position);
+        if (attached != null) {
+            Adapter<ViewHolder> a = (Adapter<ViewHolder>) adapter;
+            Dimension oldSize = attached.itemView.getPreferredSize();
+            a.onBindViewHolder(attached, position);
+            Dimension newSize = attached.itemView.getPreferredSize();
+            attached.itemView.invalidate();
+            attached.itemView.repaint();
+            if (!Objects.equals(oldSize, newSize)) {
+                invalidate();
+                repaint();
+            }
+        }
+
+        // 表示中でなくても Cache 内に古い position 紐付きエントリが残っていれば破棄。
+        recycler.invalidatePosition(position);
+    }
+
     @Override
     public void addNotify() {
         super.addNotify();
@@ -307,10 +343,62 @@ public class RecyclerPane extends JComponent implements Scrollable {
             }
         }
 
-        /** アイテム変更を通知する。 */
+        /**
+         * アイテム変更を通知する (差分更新)。
+         * <p>
+         * 対象 position の表示中 ViewHolder のみを {@code onBindViewHolder} で rebind し、
+         * Cache 内に古いエントリがあれば破棄する。preferredSize が変化しない限り全体レイアウトは
+         * 走らないため、スクロール位置は維持される。
+         * <p>
+         * 構造変化 (item 数の変化) を伴う場合は {@link #notifyItemInserted(int)} /
+         * {@link #notifyItemRemoved(int)} を使うこと。
+         */
         public void notifyItemChanged(int position) {
             if (recyclerPane != null) {
+                recyclerPane.onItemChanged(position);
+            }
+        }
+
+        /**
+         * アイテム変更を通知する。{@code force} を {@code true} にすると、差分更新ではなく
+         * {@link #notifyDataSetChanged()} 相当の全体リレイアウトにフォールバックする。
+         * <p>
+         * 差分更新では追従できないケース (LayoutManager 側のサイズキャッシュを再計算したい等)
+         * のためのエスケープハッチ。通常は引数なし版を使うこと。
+         */
+        public void notifyItemChanged(int position, boolean force) {
+            if (recyclerPane == null) return;
+            if (force) {
                 recyclerPane.onDataChanged();
+            } else {
+                recyclerPane.onItemChanged(position);
+            }
+        }
+
+        /**
+         * 範囲指定のアイテム変更を通知する (差分更新)。
+         *
+         * @param positionStart 変更範囲の開始位置 (inclusive)
+         * @param itemCount     変更されるアイテム数
+         */
+        public void notifyItemRangeChanged(int positionStart, int itemCount) {
+            if (recyclerPane == null) return;
+            for (int i = 0; i < itemCount; i++) {
+                recyclerPane.onItemChanged(positionStart + i);
+            }
+        }
+
+        /**
+         * 範囲指定のアイテム変更を通知する。{@code force=true} で全体リレイアウトにフォールバック。
+         */
+        public void notifyItemRangeChanged(int positionStart, int itemCount, boolean force) {
+            if (recyclerPane == null) return;
+            if (force) {
+                recyclerPane.onDataChanged();
+                return;
+            }
+            for (int i = 0; i < itemCount; i++) {
+                recyclerPane.onItemChanged(positionStart + i);
             }
         }
     }

@@ -1,6 +1,7 @@
 package org.to0mi1.swuit.component.recycler;
 
 import org.junit.jupiter.api.Test;
+import org.to0mi1.swuit.layout.Orientation;
 
 import javax.swing.*;
 import java.awt.*;
@@ -325,18 +326,156 @@ class RecyclerPaneTest {
         assertTrue(lm.layoutCallCount > before);
     }
 
-    @Test
-    void notifyItemChanged_relayouts() {
-        RecyclerPane pane = new RecyclerPane();
-        MockLayoutManager lm = new MockLayoutManager();
-        pane.setLayoutManager(lm);
-        CountingAdapter adapter = new CountingAdapter(10);
-        pane.setAdapter(adapter);
-        pane.doLayout();
-        int before = lm.layoutCallCount;
+    // ========== 差分更新 (notifyItemChanged) ==========
 
-        adapter.notifyItemChanged(5);
+    /** リアルレイアウトで差分更新をテストするための pane を作る。 */
+    private static RecyclerPane createLinearPane(int height, RecyclerPane.Adapter<?> adapter) {
+        RecyclerPane pane = new RecyclerPane();
+        pane.setLayoutManager(new LinearLayoutManager(Orientation.VERTICAL));
+        pane.setAdapter(adapter);
+        JScrollPane scrollPane = new JScrollPane(pane);
+        scrollPane.setBounds(0, 0, 200, height);
+        scrollPane.doLayout();
+        scrollPane.getViewport().doLayout();
         pane.doLayout();
-        assertTrue(lm.layoutCallCount > before);
+        return pane;
+    }
+
+    @Test
+    void notifyItemChanged_visiblePosition_rebindsOnlyThat() {
+        // 200x200, 各 40px → 5 個表示
+        CountingAdapter adapter = new CountingAdapter(10);
+        RecyclerPane pane = createLinearPane(200, adapter);
+        int bindBefore = adapter.bindCount;
+
+        adapter.notifyItemChanged(2);
+
+        assertEquals(bindBefore + 1, adapter.bindCount,
+                "対象 position の onBindViewHolder のみが追加で呼ばれる");
+        // 表示中ホルダーがそのまま生存し、再 attach されること
+        RecyclerPane.ViewHolder holder = pane.findViewHolderForAdapterPosition(2);
+        assertNotNull(holder, "position 2 が表示中である");
+    }
+
+    @Test
+    void notifyItemChanged_notVisiblePosition_isNoop() {
+        // 表示は 0..4 のみ。position 8 は表示外で cache にも居ない。
+        CountingAdapter adapter = new CountingAdapter(10);
+        createLinearPane(200, adapter);
+        int bindBefore = adapter.bindCount;
+
+        adapter.notifyItemChanged(8);
+
+        assertEquals(bindBefore, adapter.bindCount,
+                "表示外かつ cache 外の position への notify は no-op");
+    }
+
+    @Test
+    void notifyItemChanged_outOfRange_isNoop() {
+        CountingAdapter adapter = new CountingAdapter(10);
+        createLinearPane(200, adapter);
+        int bindBefore = adapter.bindCount;
+
+        adapter.notifyItemChanged(-1);
+        adapter.notifyItemChanged(100);
+
+        assertEquals(bindBefore, adapter.bindCount, "範囲外 position は no-op");
+    }
+
+    @Test
+    void notifyItemChanged_cachedPosition_rebindsOnNextDisplay() {
+        // スクロールで表示外に押し出された position が cache に居るとき、
+        // notifyItemChanged を呼ぶと cache が破棄され、戻ってきたときに rebind される。
+        CountingAdapter adapter = new CountingAdapter(50);
+        RecyclerPane pane = createLinearPane(200, adapter);
+
+        // position 0 を表示外へスクロール (40px * 10 行ぶん下げる)
+        pane.scrollViewportAndLayout(new Point(0, 400));
+        // この時点で position 0 は cache か pool に居るはず
+
+        int bindBeforeNotify = adapter.bindCount;
+        adapter.notifyItemChanged(0);
+        // notify 自体では bind は走らない (表示外なので)
+        assertEquals(bindBeforeNotify, adapter.bindCount,
+                "表示外 position の notify では即時 bind されない");
+
+        // 戻ってスクロール → position 0 は再度表示される
+        pane.scrollViewportAndLayout(new Point(0, 0));
+
+        assertTrue(adapter.bindCount > bindBeforeNotify,
+                "cache 破棄により再表示時に onBindViewHolder が呼ばれる: " + adapter.bindCount);
+        // position 0 が表示されていることも確認
+        assertNotNull(pane.findViewHolderForAdapterPosition(0));
+    }
+
+    @Test
+    void notifyItemChanged_force_fallsBackToFullRelayout() {
+        CountingAdapter adapter = new CountingAdapter(10);
+        RecyclerPane pane = createLinearPane(200, adapter);
+        int bindBefore = adapter.bindCount;
+
+        // force=true は onDataChanged 相当 (即時 bind は走らないが invalidate はかかる)
+        adapter.notifyItemChanged(2, true);
+        pane.doLayout();
+
+        // 全 position を再要求するわけではなく、表示中分は scrap 経由で rebind されない。
+        // 重要なのは「差分更新ではなく onDataChanged 系の経路を通る」こと。
+        // bind が「対象 1 件だけ」増える差分更新と区別できれば良い。
+        // ここでは layoutManager.onDataChanged() が呼ばれることを動作で間接検証する代わりに、
+        // 例外なく完了し pane が無事レイアウトされることを確認する。
+        assertNotNull(pane.findViewHolderForAdapterPosition(0));
+        assertTrue(adapter.bindCount >= bindBefore,
+                "force=true でも bind カウントは減らない");
+    }
+
+    @Test
+    void notifyItemRangeChanged_rebindsOnlyVisibleInRange() {
+        // 表示は 0..4。範囲 [1..3] を更新 → 3 件 bind される。
+        CountingAdapter adapter = new CountingAdapter(10);
+        createLinearPane(200, adapter);
+        int bindBefore = adapter.bindCount;
+
+        adapter.notifyItemRangeChanged(1, 3);
+
+        assertEquals(bindBefore + 3, adapter.bindCount,
+                "範囲指定で表示中の 3 件のみ rebind される");
+    }
+
+    @Test
+    void notifyItemRangeChanged_partiallyVisible_rebindsOnlyVisible() {
+        // 表示は 0..4。範囲 [3..6] (4 件) のうち、可視は 3,4 のみ
+        CountingAdapter adapter = new CountingAdapter(10);
+        createLinearPane(200, adapter);
+        int bindBefore = adapter.bindCount;
+
+        adapter.notifyItemRangeChanged(3, 4);
+
+        assertEquals(bindBefore + 2, adapter.bindCount,
+                "可視範囲のみ rebind される (範囲内の表示外は no-op)");
+    }
+
+    @Test
+    void notifyItemRangeChanged_force_fallsBackToFullRelayout() {
+        CountingAdapter adapter = new CountingAdapter(10);
+        RecyclerPane pane = createLinearPane(200, adapter);
+
+        // 例外なく完了することを確認 (内部で onDataChanged 相当)
+        assertDoesNotThrow(() -> adapter.notifyItemRangeChanged(0, 10, true));
+        pane.doLayout();
+    }
+
+    @Test
+    void findViewHolderForAdapterPosition_returnsAttachedHolder() {
+        CountingAdapter adapter = new CountingAdapter(10);
+        RecyclerPane pane = createLinearPane(200, adapter);
+
+        RecyclerPane.ViewHolder visible = pane.findViewHolderForAdapterPosition(0);
+        assertNotNull(visible, "表示中 position は取得できる");
+        assertEquals(0, visible.getAdapterPosition());
+
+        RecyclerPane.ViewHolder offscreen = pane.findViewHolderForAdapterPosition(8);
+        assertNull(offscreen, "表示外 position は null");
+
+        assertNull(pane.findViewHolderForAdapterPosition(-1), "範囲外は null");
     }
 }

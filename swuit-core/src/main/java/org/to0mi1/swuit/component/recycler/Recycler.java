@@ -195,4 +195,39 @@ public class Recycler {
         viewHolderMap.put(holder.itemView, holder);
         return holder;
     }
+
+    /**
+     * 指定 adapter position に紐づく、現在表示中の ViewHolder を返す。
+     * Cache に居る (setVisible(false) 済み) ものや、Pool に戻っている (adapterPosition = -1) ものは除外する。
+     *
+     * @return 表示中であれば該当 ViewHolder、なければ {@code null}
+     */
+    RecyclerPane.ViewHolder findAttachedHolder(int position) {
+        if (position < 0) return null;
+        for (RecyclerPane.ViewHolder holder : viewHolderMap.values()) {
+            if (holder.adapterPosition == position && holder.itemView.isVisible()) {
+                return holder;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 指定 adapter position に紐づく Cache エントリを破棄する。
+     * Cache から取り出して Pool に戻し、{@code adapterPosition} を {@code -1} にリセットする。
+     * これにより、次に同じ position が要求されたときに必ず {@code onBindViewHolder} が呼ばれる。
+     * <p>
+     * 表示中 (visible) の ViewHolder には影響しない。
+     */
+    void invalidatePosition(int position) {
+        if (position < 0) return;
+        Iterator<RecyclerPane.ViewHolder> it = cache.iterator();
+        while (it.hasNext()) {
+            RecyclerPane.ViewHolder cached = it.next();
+            if (cached.adapterPosition == position) {
+                it.remove();
+                addToPool(cached);
+            }
+        }
+    }
 }

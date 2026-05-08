@@ -488,10 +488,32 @@ recycler.setLayoutManager(new StaggeredGridLayoutManager(2));
 #### Data Change Notifications
 
 ```java
-adapter.notifyDataSetChanged();     // Full refresh
-adapter.notifyItemInserted(index);  // Insertion
-adapter.notifyItemRemoved(index);   // Removal
-adapter.notifyItemChanged(index);   // Update
+adapter.notifyDataSetChanged();              // Full refresh
+adapter.notifyItemInserted(index);           // Insertion
+adapter.notifyItemRemoved(index);            // Removal
+adapter.notifyItemChanged(index);            // Single-item differential update
+adapter.notifyItemRangeChanged(start, n);    // Range differential update
+```
+
+`notifyItemChanged` / `notifyItemRangeChanged` perform a true differential update:
+the visible ViewHolder for the target position is rebound via `onBindViewHolder`
+in place, and any stale Cache entries for that position are evicted. Unless the
+item's `preferredSize` changes, no full relayout is triggered, so the scroll
+position is preserved.
+
+For cases where the differential path is not enough (e.g. you need the
+LayoutManager to invalidate its size cache), use the `force` overload to fall
+back to a full relayout equivalent to `notifyDataSetChanged()`:
+
+```java
+adapter.notifyItemChanged(index, true);              // full relayout
+adapter.notifyItemRangeChanged(start, n, true);      // same as above
+```
+
+To grab the currently-displayed ViewHolder for a position directly:
+
+```java
+RecyclerPane.ViewHolder vh = recycler.findViewHolderForAdapterPosition(index);
 ```
 
 #### ItemDecoration

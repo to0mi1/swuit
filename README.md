@@ -488,10 +488,31 @@ recycler.setLayoutManager(new StaggeredGridLayoutManager(2));
 #### データ変更通知
 
 ```java
-adapter.notifyDataSetChanged();     // 全体更新
-adapter.notifyItemInserted(index);  // 挿入
-adapter.notifyItemRemoved(index);   // 削除
-adapter.notifyItemChanged(index);   // 変更
+adapter.notifyDataSetChanged();              // 全体更新
+adapter.notifyItemInserted(index);           // 挿入
+adapter.notifyItemRemoved(index);            // 削除
+adapter.notifyItemChanged(index);            // 単一アイテムの差分更新
+adapter.notifyItemRangeChanged(start, n);    // 範囲の差分更新
+```
+
+`notifyItemChanged` / `notifyItemRangeChanged` は差分更新として動作する。
+表示中のホルダーがあれば該当 position だけを `onBindViewHolder` で再バインドし、
+非表示で Cache に残っている古いエントリは破棄する。`preferredSize` が変化しない限り
+全体レイアウトは走らないため、スクロール位置はそのまま維持される。
+
+差分更新では追従できないケース (LayoutManager 側のサイズキャッシュを再計算したい等)
+のために、`force` フラグ付きのオーバーロードで `notifyDataSetChanged()` 相当の
+全体リレイアウトにフォールバックできる:
+
+```java
+adapter.notifyItemChanged(index, true);              // 全体リレイアウト
+adapter.notifyItemRangeChanged(start, n, true);      // 同上
+```
+
+表示中の特定 ViewHolder を直接取得することもできる:
+
+```java
+RecyclerPane.ViewHolder vh = recycler.findViewHolderForAdapterPosition(index);
 ```
 
 #### ItemDecoration
